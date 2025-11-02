@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  # ======================
+  # PostgreSQL Database
+  # ======================
+  postgres:
+    image: postgres:latest
+    container_name: schoolmanage_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: schoolmanage
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5005:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - school-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ======================
+  # Node.js Application
+  # ======================
+  app:
+    build: .
+    container_name: schoolmanage_app
+    restart: always
+    ports:
+      - "3500:3500"
+    environment:
+      DATABASE_URL: postgresql://postgres:root@postgres:5432/schoolmanage
+      NODE_ENV: development
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - school-net
+    command: sh -c "echo 'Waiting for Postgres healthcheck...'; npx prisma generate && npx prisma migrate deploy && node dist/server.js"
+
+# ======================
+# Volumes & Networks
+# ======================
+volumes:
+  postgres_data:
+
+networks:
+  school-net:
+    driver: bridge

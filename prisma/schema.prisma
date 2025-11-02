@@ -1,0 +1,361 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EtatCandidature {
+  en_attente
+  en_cours
+  accepte
+  refuse
+  incomplet
+}
+
+enum StatutPresence {
+  PRESENT
+  ABSENT
+  RETARD
+  JUSTIFIE
+}
+
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+
+  // Relations
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  id           Int @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  nom           String
+  prenom        String
+  dateNaissance DateTime
+  adresse       String
+  telephone     String
+  email         String   @unique
+  password      String
+
+  roleId Int?
+  role   Role? @relation(fields: [roleId], references: [id])
+
+  // Relations
+  candidat  Candidat?
+  etudiant  Etudiant?
+  employe   Employe?
+  parent    Parent?
+  createdAt DateTime    @default(now())
+  Ressource Ressource[]
+}
+
+model Candidat {
+  idCandidature   Int             @id @default(autoincrement())
+  dateCandidature DateTime
+  etat            EtatCandidature @default(en_attente)
+
+  // Relations
+  userId             Int       @unique
+  user               User      @relation(fields: [userId], references: [id])
+  etudiant           Etudiant? @relation(fields: [etudiantIdEtudiant], references: [idEtudiant])
+  etudiantIdEtudiant Int?
+}
+
+model Etudiant {
+  idEtudiant      Int      @id @default(autoincrement())
+  matricule       String   @unique
+  dateInscription DateTime
+
+  // Relations
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  filiereId Int
+  filiere   Filiere @relation(fields: [filiereId], references: [id])
+
+  groupeId Int
+  groupe   Groupe @relation(fields: [groupeId], references: [id])
+
+  absences     Absence[]
+  examens      EtudiantExamen[]
+  parents      Parent[]
+  events       Event[]
+  opportunites Opportunite[]
+  Candidat     Candidat[]
+}
+
+model Employe {
+  idEmploye Int    @id @default(autoincrement())
+  poste     String
+  salaire   Float
+
+  // Relations
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  enseignant   Enseignant?
+  events       Event[]
+  opportunites Opportunite[]
+}
+
+model Enseignant {
+  idEnseignant Int    @id @default(autoincrement())
+  specialite   String
+
+  employeId Int     @unique
+  employe   Employe @relation(fields: [employeId], references: [idEmploye])
+
+  moduleAffectations ModuleEnseignant[]
+  groupes            Groupe[]
+  plannings          Planning[]
+  examens            Examen[]
+  Cours              Cours[]
+}
+
+model Parent {
+  idParent Int @id @default(autoincrement())
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  etudiants Etudiant[]
+}
+
+model Filiere {
+  id          Int              @id @default(autoincrement())
+  nom         String
+  description String
+  niveaux     NiveauScolaire[]
+  etudiants   Etudiant[]
+}
+
+model NiveauScolaire {
+  id         Int      @id @default(autoincrement())
+  anneeLabel String // Exemple : "2025-2026"
+  dateDebut  DateTime //  Exemple : "15-10-2025"
+  dateFin    DateTime //  Exemple : "15-07-2026"
+
+  filiereId Int
+  filiere   Filiere @relation(fields: [filiereId], references: [id])
+
+  modules Module[]
+  groupes Groupe[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Groupe {
+  id  Int    @id @default(autoincrement())
+  nom String
+
+  niveauId Int
+  niveau   NiveauScolaire @relation(fields: [niveauId], references: [id])
+
+  etudiants   Etudiant[]
+  enseignants Enseignant[]
+}
+
+model Module {
+  id          Int    @id @default(autoincrement())
+  nom         String
+  description String
+
+  niveauId Int
+  niveau   NiveauScolaire @relation(fields: [niveauId], references: [id])
+
+  cours       Cours[]
+  examens     Examen[]
+  enseignants ModuleEnseignant[]
+}
+
+model Cours {
+  id          Int      @id @default(autoincrement())
+  titre       String
+  description String?
+  dateDebut   DateTime // ex: "2025-11-01T08:00:00Z"
+  dateFin     DateTime // ex: "2025-11-01T10:00:00Z"
+  duree       Int? // optionnel, peut être calculé à partir de la différence entre dateFin et dateDebut
+
+  moduleId Int
+  module   Module @relation(fields: [moduleId], references: [id])
+
+  enseignantId Int?
+  enseignant   Enseignant? @relation(fields: [enseignantId], references: [idEnseignant])
+
+  salleId Int?
+  salle   Salle? @relation(fields: [salleId], references: [id])
+
+  plannings  Planning[]
+  ressources CoursRessource[]
+  absences   Absence[]
+}
+
+model TypeRessource {
+  id         Int         @id @default(autoincrement())
+  nom        String      @unique
+  ressources Ressource[]
+}
+
+model Ressource {
+  id          Int      @id @default(autoincrement())
+  titre       String
+  description String?
+  url         String // lien Firebase Storage
+  uploadedAt  DateTime @default(now())
+
+  uploadedById Int?
+  uploadedBy   User? @relation(fields: [uploadedById], references: [id])
+
+  typeId Int
+  type   TypeRessource @relation(fields: [typeId], references: [id])
+
+  coursLink CoursRessource[]
+}
+
+model CoursRessource {
+  id Int @id @default(autoincrement())
+
+  coursId Int
+  cours   Cours @relation(fields: [coursId], references: [id])
+
+  ressourceId Int
+  ressource   Ressource @relation(fields: [ressourceId], references: [id])
+}
+
+model Examen {
+  id    Int    @id @default(autoincrement())
+  titre String
+  type  String // "Initial", "Rattrapage", ...
+  coeff Float  @default(1)
+
+  dateDebut    DateTime // ex: 2025-06-10T08:00:00Z
+  dateFin      DateTime // ex: 2025-06-10T10:00:00Z
+  dureeMinutes Int?
+
+  moduleId Int
+  module   Module @relation(fields: [moduleId], references: [id])
+
+  enseignantId Int
+  enseignant   Enseignant @relation(fields: [enseignantId], references: [idEnseignant])
+
+  salleId Int?
+  salle   Salle? @relation(fields: [salleId], references: [id])
+
+  etudiants EtudiantExamen[]
+}
+
+model Absence {
+  id     Int            @id @default(autoincrement())
+  date   DateTime
+  motif  String?
+  statut StatutPresence @default(PRESENT)
+
+  etudiantId Int
+  etudiant   Etudiant @relation(fields: [etudiantId], references: [idEtudiant])
+
+  coursId Int
+  cours   Cours @relation(fields: [coursId], references: [id])
+}
+
+model Salle {
+  id       Int    @id @default(autoincrement())
+  nom      String
+  capacite Int
+
+  plannings Planning[]
+  Cours     Cours[]
+  Examen    Examen[]
+}
+
+model Planning {
+  id          Int      @id @default(autoincrement())
+  dateDebut   DateTime
+  dateFin     DateTime
+  description String
+
+  coursId Int
+  cours   Cours @relation(fields: [coursId], references: [id])
+
+  enseignantId Int
+  enseignant   Enseignant @relation(fields: [enseignantId], references: [idEnseignant])
+
+  salleId Int
+  salle   Salle @relation(fields: [salleId], references: [id])
+}
+
+model Event {
+  id    Int      @id @default(autoincrement())
+  titre String
+  date  DateTime
+
+  employeId Int
+  employe   Employe @relation(fields: [employeId], references: [idEmploye])
+
+  etudiants Etudiant[]
+}
+
+model Opportunite {
+  id    Int    @id @default(autoincrement())
+  titre String
+  type  String
+
+  employeId Int
+  employe   Employe @relation(fields: [employeId], references: [idEmploye])
+
+  etudiants Etudiant[]
+}
+
+model ModuleEnseignant {
+  id              Int      @id @default(autoincrement())
+  dateAffectation DateTime
+
+  enseignantId Int
+  enseignant   Enseignant @relation(fields: [enseignantId], references: [idEnseignant])
+
+  moduleId Int
+  module   Module @relation(fields: [moduleId], references: [id])
+}
+
+model EtudiantExamen {
+  id             Int      @id @default(autoincrement())
+  present        Boolean
+  note           Float
+  mention        String
+  dateEvaluation DateTime
+
+  etudiantId Int
+  etudiant   Etudiant @relation(fields: [etudiantId], references: [idEtudiant])
+
+  examenId Int
+  examen   Examen @relation(fields: [examenId], references: [id])
+}
