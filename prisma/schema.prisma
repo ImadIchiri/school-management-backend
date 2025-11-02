@@ -34,6 +34,10 @@ model Role {
   name        String  @unique
   description String?
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   // Relations
   users       User[]
   permissions RolePermission[]
@@ -43,6 +47,10 @@ model Permission {
   id          Int     @id @default(autoincrement())
   name        String  @unique
   description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   roles RolePermission[]
 }
@@ -54,6 +62,10 @@ model RolePermission {
 
   role       Role       @relation(fields: [roleId], references: [id])
   permission Permission @relation(fields: [permissionId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 model User {
@@ -70,11 +82,15 @@ model User {
   role   Role? @relation(fields: [roleId], references: [id])
 
   // Relations
-  candidat  Candidat?
-  etudiant  Etudiant?
-  employe   Employe?
-  parent    Parent?
-  createdAt DateTime    @default(now())
+  candidat Candidat?
+  etudiant Etudiant?
+  employe  Employe?
+  parent   Parent?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   Ressource Ressource[]
 }
 
@@ -82,6 +98,10 @@ model Candidat {
   idCandidature   Int             @id @default(autoincrement())
   dateCandidature DateTime
   etat            EtatCandidature @default(en_attente)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   // Relations
   userId             Int       @unique
@@ -94,6 +114,10 @@ model Etudiant {
   idEtudiant      Int      @id @default(autoincrement())
   matricule       String   @unique
   dateInscription DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   // Relations
   userId Int  @unique
@@ -118,6 +142,10 @@ model Employe {
   poste     String
   salaire   Float
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   // Relations
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id])
@@ -130,6 +158,10 @@ model Employe {
 model Enseignant {
   idEnseignant Int    @id @default(autoincrement())
   specialite   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   employeId Int     @unique
   employe   Employe @relation(fields: [employeId], references: [idEmploye])
@@ -144,6 +176,10 @@ model Enseignant {
 model Parent {
   idParent Int @id @default(autoincrement())
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id])
 
@@ -151,11 +187,16 @@ model Parent {
 }
 
 model Filiere {
-  id          Int              @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   nom         String
   description String
-  niveaux     NiveauScolaire[]
-  etudiants   Etudiant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  niveaux   NiveauScolaire[]
+  etudiants Etudiant[]
 }
 
 model NiveauScolaire {
@@ -164,19 +205,24 @@ model NiveauScolaire {
   dateDebut  DateTime //  Exemple : "15-10-2025"
   dateFin    DateTime //  Exemple : "15-07-2026"
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   filiereId Int
   filiere   Filiere @relation(fields: [filiereId], references: [id])
 
   modules Module[]
   groupes Groupe[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Groupe {
   id  Int    @id @default(autoincrement())
   nom String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   niveauId Int
   niveau   NiveauScolaire @relation(fields: [niveauId], references: [id])
@@ -189,6 +235,10 @@ model Module {
   id          Int    @id @default(autoincrement())
   nom         String
   description String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   niveauId Int
   niveau   NiveauScolaire @relation(fields: [niveauId], references: [id])
@@ -206,6 +256,10 @@ model Cours {
   dateFin     DateTime // ex: "2025-11-01T10:00:00Z"
   duree       Int? // optionnel, peut être calculé à partir de la différence entre dateFin et dateDebut
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   moduleId Int
   module   Module @relation(fields: [moduleId], references: [id])
 
@@ -221,8 +275,13 @@ model Cours {
 }
 
 model TypeRessource {
-  id         Int         @id @default(autoincrement())
-  nom        String      @unique
+  id  Int    @id @default(autoincrement())
+  nom String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   ressources Ressource[]
 }
 
@@ -232,6 +291,9 @@ model Ressource {
   description String?
   url         String // lien Firebase Storage
   uploadedAt  DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   uploadedById Int?
   uploadedBy   User? @relation(fields: [uploadedById], references: [id])
@@ -245,6 +307,10 @@ model Ressource {
 model CoursRessource {
   id Int @id @default(autoincrement())
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   coursId Int
   cours   Cours @relation(fields: [coursId], references: [id])
 
@@ -257,6 +323,10 @@ model Examen {
   titre String
   type  String // "Initial", "Rattrapage", ...
   coeff Float  @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   dateDebut    DateTime // ex: 2025-06-10T08:00:00Z
   dateFin      DateTime // ex: 2025-06-10T10:00:00Z
@@ -280,6 +350,10 @@ model Absence {
   motif  String?
   statut StatutPresence @default(PRESENT)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   etudiantId Int
   etudiant   Etudiant @relation(fields: [etudiantId], references: [idEtudiant])
 
@@ -292,6 +366,10 @@ model Salle {
   nom      String
   capacite Int
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   plannings Planning[]
   Cours     Cours[]
   Examen    Examen[]
@@ -302,6 +380,10 @@ model Planning {
   dateDebut   DateTime
   dateFin     DateTime
   description String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   coursId Int
   cours   Cours @relation(fields: [coursId], references: [id])
@@ -318,6 +400,10 @@ model Event {
   titre String
   date  DateTime
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   employeId Int
   employe   Employe @relation(fields: [employeId], references: [idEmploye])
 
@@ -329,6 +415,10 @@ model Opportunite {
   titre String
   type  String
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
   employeId Int
   employe   Employe @relation(fields: [employeId], references: [idEmploye])
 
@@ -338,6 +428,10 @@ model Opportunite {
 model ModuleEnseignant {
   id              Int      @id @default(autoincrement())
   dateAffectation DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   enseignantId Int
   enseignant   Enseignant @relation(fields: [enseignantId], references: [idEnseignant])
@@ -352,6 +446,10 @@ model EtudiantExamen {
   note           Float
   mention        String
   dateEvaluation DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   etudiantId Int
   etudiant   Etudiant @relation(fields: [etudiantId], references: [idEtudiant])
