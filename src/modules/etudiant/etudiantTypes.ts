@@ -1,3 +1,4 @@
+// Types etudiant
 export type IEtudiant = {
   idEtudiant?: number;
   matricule: string;

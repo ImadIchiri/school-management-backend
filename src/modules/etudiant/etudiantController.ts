@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import * as etudiantService from "./etudiantService";
-
+// Controlleurs Etudiant
 export const createEtudiantController = async (req: Request, res: Response) => {
   try {
     const etudiant = await etudiantService.createEtudiant(req.body);

@@ -6,7 +6,7 @@ import {
   deleteEtudiantController,
   getAllEtudiantsController,
 } from "./etudiantController";
-
+// Routes etudiant
 const router = Router();
 
 router.post("/", createEtudiantController);
