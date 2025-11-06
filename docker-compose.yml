@@ -44,7 +44,7 @@ services:
         condition: service_healthy
     networks:
       - school-net
-    command: sh -c "echo 'Waiting for Postgres healthcheck...'; npx prisma generate && npx prisma migrate deploy && node dist/server.js"
+    command: sh -c "echo 'Waiting for Postgres healthcheck...'; npm run build && npx prisma generate && npx prisma migrate deploy && node dist/server.js"
 
 # ======================
 # Volumes & Networks
