@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import * as eventService from "./eventService.js";
-import type { ExistingEvent } from "./eventTypes.js";
-import prisma from "../../config/prisma.js";
+import * as eventService from "./eventService";
+import type { ExistingEvent } from "./eventTypes";
+import prisma from "../../config/prisma";
 
 /* 
     Get All Events
@@ -16,9 +16,12 @@ export const getAllEvents = async (req: Request, res: Response) => {
       length: events.length,
     });
   } catch (error: any) {
+    console.log(error);
+
     return res.status(500).json({
       success: false,
       message: error?.message || "Internal Server Error",
+      error: error,
     });
   }
 };
@@ -31,7 +34,7 @@ export const getEventById = async (req: Request, res: Response) => {
   try {
     // eventId send on the body
     const { eventId: id }: { eventId: number } = req.body;
-    const event: ExistingEvent = await eventService.getEventById(id);
+    const event: ExistingEvent | null = await eventService.getEventById(id);
 
     if (!event) {
       return res.status(404).json({
@@ -101,7 +104,7 @@ export const updateEvent = async (req: Request, res: Response) => {
     const { eventId, titre, date, employeId } = req.body;
 
     // Check If Event Exists
-    const event: ExistingEvent | undefined = await eventService.getEventById(
+    const event: ExistingEvent | null = await eventService.getEventById(
       eventId
     );
 
