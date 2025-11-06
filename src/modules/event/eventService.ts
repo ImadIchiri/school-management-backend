@@ -1,5 +1,5 @@
-import prisma from "../../config/prisma";
-import type { ExistingEvent, NewEvent } from "./eventTypes";
+import prisma from "../../config/prisma.js";
+import type { ExistingEvent, NewEvent } from "./eventTypes.js";
 
 // Get All Events
 export const getAllEvents = async () => {

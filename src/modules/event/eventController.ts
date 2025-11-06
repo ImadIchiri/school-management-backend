@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import * as eventService from "./eventService";
-import type { ExistingEvent } from "./eventTypes";
-import prisma from "../../config/prisma";
+import * as eventService from "./eventService.js";
+import type { ExistingEvent } from "./eventTypes.js";
+import prisma from "../../config/prisma.js";
 
 /* 
     Get All Events
