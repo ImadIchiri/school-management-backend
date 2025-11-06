@@ -12,6 +12,9 @@ app.use(express.json());
 // Use Event Routes
 app.use("/api/v1", allRoutes.eventRoutes);
 
+// Use Event Routes
+app.use("/api/v1", allRoutes.opportunityRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT: ${PORT}`);
 });
