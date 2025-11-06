@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022", // Or a newer ES version supported by your Node.js environment
-    "module": "es2022", // Or "esnext" for the latest ES module features
+    "module": "commonjs", // Or "esnext" for the latest ES module features
     "moduleResolution": "node", // Important for resolving modules in Node.js environments
     "outDir": "./dist", // Directory for compiled JavaScript files
     "rootDir": "./src", // Root directory of your TypeScript source files
@@ -16,6 +16,7 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
 
+    "allowSyntheticDefaultImports": true,
     "noEmit": false
   },
   "include": ["src/**/*.ts"], // Files to include in compilation

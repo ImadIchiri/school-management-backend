@@ -1,5 +1,7 @@
 import express from "express";
-import * as allRoutes from "./routes/index.js";
+import * as allRoutes from "./routes/index";
+
+import "dotenv/config";
 
 const PORT = process.env.PORT || 8088;
 const app = express();
