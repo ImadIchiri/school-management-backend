@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import * as parentService from "./parentServices";
+import * as parentService from "./parentService";
 
 export const createParentController = async (req: Request, res: Response) => {
   try {
