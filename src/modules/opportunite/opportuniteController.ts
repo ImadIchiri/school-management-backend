@@ -29,21 +29,35 @@ export const getAllOpportunities = async (req: Request, res: Response) => {
   }
 };
 
+// Define specific type for params
+type GetOpportunityByIdParams = {
+  opportunityId: string | undefined;
+};
 /* 
     Get Opportunity By Id
     Request Body: { opportunityId }
 */
-export const getOpportunityById = async (req: Request, res: Response) => {
+export const getOpportunityById = async (
+  req: Request<GetOpportunityByIdParams>,
+  res: Response
+) => {
   try {
-    // opportunityId send on the body
-    const { opportunityId: id }: { opportunityId: number } = req.body;
+    const { opportunityId } = req.params;
+
+    if (opportunityId === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid Id: ${opportunityId}`,
+      });
+    }
+
     const opportunity: ExistingOpportunity | null =
-      await opportunityService.getOpportunityById(id);
+      await opportunityService.getOpportunityById(parseInt(opportunityId));
 
     if (!opportunity) {
       return res.status(404).json({
         success: false,
-        message: `No opportunity found for the Id: ${id}`,
+        message: `No opportunity found for the Id: ${opportunityId}`,
       });
     }
 
@@ -81,7 +95,7 @@ export const createOpportunity = async (req: Request, res: Response) => {
     if (!employe) {
       return res.status(404).json({
         success: false,
-        message: `No Employee Foud With Id ${employeId}`,
+        message: `No Employee Found With Id ${employeId}`,
       });
     }
 
@@ -114,8 +128,9 @@ export const createOpportunity = async (req: Request, res: Response) => {
 */
 export const updateOpportunity = async (req: Request, res: Response) => {
   try {
+    const { opportunityId: opportunityIdParam } = req.params;
     const {
-      opportunityId,
+      opportunityId: opportunityIdBody,
       titre,
       type,
       employeId,
@@ -126,62 +141,101 @@ export const updateOpportunity = async (req: Request, res: Response) => {
       employeId: number;
     } = req.body;
 
-    // Check If Opportunitey Exists
-    const opportunitey: ExistingOpportunity | null =
-      await opportunityService.getOpportunityById(opportunityId);
-
-    if (!opportunitey) {
-      return res.status(404).json({
+    // Check if Ids are the same
+    if (
+      opportunityIdParam === undefined ||
+      opportunityIdBody === undefined ||
+      parseInt(opportunityIdParam) !== opportunityIdBody
+    ) {
+      return res.status(400).json({
         success: false,
-        message: `No Opportunitey Foud With Id ${employeId}`,
+        message: "Make sure Ids are valid numbers and are the same!",
       });
     }
 
-    const updatedOpportunitey = await opportunityService.updateOpportunity({
-      ...opportunitey,
-      titre,
-      type,
+    // Check If Opportunity Exists
+    const opportunity: ExistingOpportunity | null =
+      await opportunityService.getOpportunityById(opportunityIdBody);
+
+    if (!opportunity) {
+      return res.status(404).json({
+        success: false,
+        message: `No Opportunity Found With Id ${opportunityIdBody}`,
+      });
+    }
+
+    // Check If Employe Exists
+    const employe = await prisma.employe.findUnique({
+      where: { idEmploye: employeId, isDeleted: false },
+    });
+
+    if (!employe) {
+      return res.status(404).json({
+        success: false,
+        message: `No Employe Found With Id ${employeId}`,
+      });
+    }
+
+    // Update Opportunity
+    const updatedOpportunity = await opportunityService.updateOpportunity({
+      id: opportunityIdBody,
+      titre: titre || opportunity.titre,
+      type: type || opportunity.type,
       employeId,
     });
 
-    // Update Opportunitey
     return res.status(200).json({
       success: true,
-      message: `Opportunitey Updated Successfully`,
-      date: updatedOpportunitey,
+      message: `Opportunity Updated Successfully`,
+      date: updatedOpportunity,
     });
   } catch (error: any) {
-    console.log(`Error While Updating Opportunitey ${error}`);
+    console.log(`Error While Updating Opportunity ${error}`);
     return res.status(500).json({
       success: false,
-      message: `Error While Updating Opportunitey`,
+      message: `Error While Updating Opportunity`,
       error: error,
     });
   }
 };
 
 /*
-    Delete Opportunitey
-    Request Body: { opportuniteyId: Int }
+    Delete Opportunity
+    Request Body: { opportunityId: Int }
 */
 export const deleteOpportunity = async (req: Request, res: Response) => {
   try {
-    const { opportuniteyId }: { opportuniteyId: number } = req.body;
+    const { opportunityId: opportunityIdParams } = req.params;
+    const { opportunityId: opportunityIdBody }: { opportunityId: number } =
+      req.body;
+
+    // Check if Ids are the same
+    if (
+      opportunityIdParams === undefined ||
+      opportunityIdBody === undefined ||
+      parseInt(opportunityIdParams) !== opportunityIdBody
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Make sure Ids are valid numbers and are the same!",
+      });
+    }
 
     // Check If Opportunity Exists
     const opportunity = await opportunityService.getOpportunityById(
-      opportuniteyId
+      opportunityIdBody
     );
     if (!opportunity) {
       return res.status(404).json({
         success: false,
-        message: `No Opportunity Foud With Id ${opportuniteyId}`,
+        message: `No Opportunity Found With Id ${opportunityIdBody}`,
       });
     }
 
     // Delete the Opportunity
-    const deletedOpportunity =
-      opportunityService.deleteOpportunity(opportunity);
+    const deletedOpportunity = await opportunityService.deleteOpportunity(
+      opportunityIdBody
+    );
 
     return res.status(200).json({
       success: true,
