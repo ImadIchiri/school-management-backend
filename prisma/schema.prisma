@@ -209,7 +209,7 @@ model Parent {
 
 model Filiere {
   id          Int    @id @default(autoincrement())
-  nom         String
+  nom         String @unique
   description String
 
   createdAt DateTime  @default(now())
@@ -241,7 +241,7 @@ model NiveauScolaire {
 
 model Groupe {
   id  Int    @id @default(autoincrement())
-  nom String
+  nom String @unique
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -394,7 +394,7 @@ model Absence {
 
 model Salle {
   id       Int    @id @default(autoincrement())
-  nom      String
+  nom      String @unique
   capacite Int
 
   createdAt DateTime  @default(now())
