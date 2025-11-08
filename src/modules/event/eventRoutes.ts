@@ -16,6 +16,6 @@ eventRoutes.post("/events", eventController.createEvent);
 eventRoutes.put("/events/:eventId", eventController.updateEvent);
 
 // Delete Event
-eventRoutes.put("/events/:eventId", eventController.deleteEvent);
+eventRoutes.delete("/events/:eventId", eventController.deleteEvent);
 
 export default eventRoutes;

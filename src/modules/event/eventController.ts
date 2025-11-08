@@ -26,24 +26,40 @@ export const getAllEvents = async (req: Request, res: Response) => {
   }
 };
 
+// Define specific type for params
+type GetEventByIdParams = {
+  eventId: string | undefined;
+};
 /* 
     Get Event By Id
-    Request Body: { eventId }
+    Request Param: { eventId }
 */
-export const getEventById = async (req: Request, res: Response) => {
+export const getEventById = async (
+  req: Request<GetEventByIdParams>,
+  res: Response
+) => {
   try {
-    // eventId send on the body
-    const { eventId: id }: { eventId: number } = req.body;
-    const event: ExistingEvent | null = await eventService.getEventById(id);
+    const { eventId } = req.params;
+
+    if (eventId === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid Id: ${eventId}`,
+      });
+    }
+
+    const event: ExistingEvent | null = await eventService.getEventById(
+      parseInt(eventId)
+    );
 
     if (!event) {
       return res.status(404).json({
         success: false,
-        message: `No event found for the Id: ${id}`,
+        message: `No event found for the Id: ${eventId}`,
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: event,
     });
@@ -58,6 +74,10 @@ export const getEventById = async (req: Request, res: Response) => {
 /*
     Create New Event
     Request Body: { titre: string, date DateTime, employeId Int }
+
+    Date Format:
+      date: (year, month (0-indexed), day, hour, minute, second, and millisecond)
+      expl: 28/05/2026 == date: (2026, 4, 28, 12, 30, 0, 0)
 */
 export const createEvent = async (req: Request, res: Response) => {
   try {
@@ -82,6 +102,9 @@ export const createEvent = async (req: Request, res: Response) => {
       employeId,
     });
 
+    // remove 'emmploye: {...}' from event Object - And keep 'employeId'
+    if (event?.employe) delete event.employe;
+
     return res.status(201).json({
       success: true,
       data: event,
@@ -101,11 +124,36 @@ export const createEvent = async (req: Request, res: Response) => {
 */
 export const updateEvent = async (req: Request, res: Response) => {
   try {
-    const { eventId, titre, date, employeId } = req.body;
+    const { eventId: evenIdParams } = req.params;
+    const { eventId: eventIdBody, titre, date, employeId } = req.body;
+
+    // Check if Ids are the same
+    if (
+      evenIdParams === undefined ||
+      eventIdBody === undefined ||
+      parseInt(evenIdParams) !== eventIdBody
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Make sure Ids are valid numbers and are the same!",
+      });
+    }
+
+    // Check For Employe
+    const employe = await prisma.employe.findUnique({
+      where: { idEmploye: employeId, isDeleted: false },
+    });
+
+    if (!employe) {
+      return res.status(400).json({
+        success: false,
+        message: `No Employe Found With Id: ${employeId}`,
+      });
+    }
 
     // Check If Event Exists
     const event: ExistingEvent | null = await eventService.getEventById(
-      eventId
+      eventIdBody
     );
 
     if (!event) {
@@ -115,6 +163,7 @@ export const updateEvent = async (req: Request, res: Response) => {
       });
     }
 
+    // Update Event
     const updatedEvent = await eventService.updateEvent({
       ...event,
       titre,
@@ -122,7 +171,6 @@ export const updateEvent = async (req: Request, res: Response) => {
       employeId,
     });
 
-    // Update Employe
     return res.status(200).json({
       success: true,
       message: `Event Updated Successfully`,
@@ -144,21 +192,32 @@ export const updateEvent = async (req: Request, res: Response) => {
 */
 export const deleteEvent = async (req: Request, res: Response) => {
   try {
-    const { eventId }: { eventId: number } = req.body;
+    const { eventId: evenIdParams } = req.params;
+    const { eventId: eventIdBody }: { eventId: number | undefined } = req.body;
 
-    // Check If Event Exists
-    const event = await eventService.getEventById(eventId);
-    if (!event) {
-      return res.status(404).json({
+    // Check if Ids are the same
+    if (
+      evenIdParams === undefined ||
+      eventIdBody === undefined ||
+      parseInt(evenIdParams) !== eventIdBody
+    ) {
+      return res.status(400).json({
         success: false,
-        message: `No Event Foud With Id ${eventId}`,
+        message: "Make sure Ids are valid numbers and are the same!",
       });
     }
 
-    // Check If Already Deleted
+    // Check If Event Exists
+    const event = await eventService.getEventById(eventIdBody);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: `No Event Foud With Id ${eventIdBody}`,
+      });
+    }
 
     // Delete the Event
-    const deletedEvent = eventService.deleteEvent(event);
+    const deletedEvent = await eventService.deleteEvent(eventIdBody);
 
     return res.status(200).json({
       success: true,
