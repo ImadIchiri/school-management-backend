@@ -20,10 +20,10 @@ app.use("/api/v1", allRoutes.opportunityRoutes);
 app.use("/api/v1", allRoutes.planningRoutes);
 
 // Use Absence Routes (exposes /api/v1/absence/...)
-app.use("/api/v1", allRoutes.absenceRoutes);
+app.use("/api/v1/absence", allRoutes.absenceRoutes);
 
 // Use Examen Routes (exposes /api/v1/examen/...)
-app.use("/api/v1", allRoutes.examenRoutes);
+app.use("/api/v1/examen", allRoutes.examenRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT: ${PORT}`);
