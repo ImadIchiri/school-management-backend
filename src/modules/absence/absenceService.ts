@@ -70,13 +70,10 @@ const getAllAbsences = async (filters?: AbsenceFilters) => {
 };
 
 const getAbsenceById = async (id: number) => {
-	const absence = await prisma.absence.findFirst({ where: { id, isDeleted: false }, include: { etudiant: { include: { user: true } }, cours: true } });
-	if (!absence) {
-		const err: any = new Error("Absence introuvable");
-		err.statusCode = 404;
-		throw err;
-	}
-	return absence;
+	return await prisma.absence.findFirst({ 
+		where: { id, isDeleted: false }, 
+		include: { etudiant: { include: { user: true } }, cours: true } 
+	});
 };
 
 const updateAbsence = async (id: number, payload: UpdateAbsenceDTO) => {

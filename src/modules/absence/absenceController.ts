@@ -73,7 +73,10 @@ const getAbsenceById = async (req: Request, res: Response, next: NextFunction) =
 		if (!id) return res.status(400).json({ message: "id invalide" });
 
 		const item = await service.getAbsenceById(id);
-		return res.json(item);
+
+		if (!item) return res.status(404).json({ success: false, message: "absence non trouvée" });
+
+		return res.json({success: true, data: item});
 	} catch (err) {
 		next(err);
 	}
