@@ -76,4 +76,6 @@ const deleteExamen = async (req: Request, res: Response, next: NextFunction) => 
 	}
 };
 
+
+
 export default { createExamen, getAllExamens, getExamenById, updateExamen, deleteExamen };

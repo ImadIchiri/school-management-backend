@@ -9,4 +9,5 @@ router.post("/", controller.createExamen);
 router.put("/:id", controller.updateExamen);
 router.delete("/:id", controller.deleteExamen);
 
+
 export default router;
