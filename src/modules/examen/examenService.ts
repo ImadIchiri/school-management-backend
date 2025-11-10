@@ -117,4 +117,50 @@ const deleteExamen = async (id: number) => {
   return deleted;
 };
 
+// Ensure etudiant exists (schema uses idEtudiant)
+const ensureEtudiantExists = async (etudiantId: number) => {
+  const e = await prisma.etudiant.findFirst({ where: { idEtudiant: etudiantId } });
+  if (!e) throw new Error("Etudiant introuvable");
+  return e;
+};
+
+/** Relation helpers **/
+const listEtudiantsForExamen = async (examenId: number) => {
+  await prisma.examen.findUnique({ where: { id: examenId } }); // will be null if not exists -> let client handle
+  return prisma.etudiantExamen.findMany({ where: { examenId }, include: { etudiant: { include: { user: true } } } });
+};
+
+const addEtudiantsToExamen = async (examenId: number, etudiants: Array<any>) => {
+  const exam = await prisma.examen.findUnique({ where: { id: examenId } });
+  if (!exam) throw new Error("Examen introuvable");
+
+  const toCreate = [] as any[];
+  for (const s of etudiants) {
+    if (!s?.etudiantId) throw new Error("etudiantId requis pour chaque entrée");
+    await ensureEtudiantExists(s.etudiantId);
+    toCreate.push({
+      etudiantId: s.etudiantId,
+      present: s.present ?? false,
+      note: s.note ?? 0,
+      mention: s.mention ?? "",
+      dateEvaluation: s.dateEvaluation ? (typeof s.dateEvaluation === "string" ? new Date(s.dateEvaluation) : s.dateEvaluation) : new Date(),
+      examenId,
+    });
+  }
+
+  // createMany with skipDuplicates to avoid duplicates
+  await prisma.etudiantExamen.createMany({ data: toCreate as any, skipDuplicates: true });
+  return prisma.etudiantExamen.findMany({ where: { examenId }, include: { etudiant: { include: { user: true } } } });
+};
+
+const removeEtudiantFromExamen = async (examenId: number, etudiantId: number) => {
+  // ensure both exist
+  const exam = await prisma.examen.findUnique({ where: { id: examenId } });
+  if (!exam) throw new Error("Examen introuvable");
+  await ensureEtudiantExists(etudiantId);
+
+  const deleted = await prisma.etudiantExamen.deleteMany({ where: { examenId, etudiantId } });
+  return deleted;
+};
+
 export default { createExamen, getAllExamens, getExamenById, updateExamen, deleteExamen };
