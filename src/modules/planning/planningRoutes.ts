@@ -16,6 +16,6 @@ planningRoutes.post("/plannings", planningController.createPlanning);
 planningRoutes.put("/plannings/:planningId", planningController.updatePlanning);
 
 // Delete Planning
-planningRoutes.put("/plannings/:planningId", planningController.deletePlanning);
+planningRoutes.delete("/plannings/:planningId", planningController.deletePlanning);
 
 export default planningRoutes;
