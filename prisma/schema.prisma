@@ -29,6 +29,15 @@ enum StatutPresence {
   JUSTIFIE
 }
 
+enum NiveauCandidat {
+  BACHELOR_1
+  BACHELOR_2
+  BACHELOR_3
+  MASTER_1
+  MASTER_2
+  MASTER_3
+}
+
 model Role {
   id          Int     @id @default(autoincrement())
   name        String  @unique
@@ -102,6 +111,9 @@ model Candidat {
   idCandidature   Int             @id @default(autoincrement())
   dateCandidature DateTime
   etat            EtatCandidature @default(en_attente)
+
+  filiere String
+  niveau  NiveauCandidat
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -197,7 +209,7 @@ model Parent {
 
 model Filiere {
   id          Int    @id @default(autoincrement())
-  nom         String
+  nom         String @unique
   description String
 
   createdAt DateTime  @default(now())
@@ -229,7 +241,7 @@ model NiveauScolaire {
 
 model Groupe {
   id  Int    @id @default(autoincrement())
-  nom String
+  nom String @unique
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -382,7 +394,7 @@ model Absence {
 
 model Salle {
   id       Int    @id @default(autoincrement())
-  nom      String
+  nom      String @unique
   capacite Int
 
   createdAt DateTime  @default(now())
