@@ -5,7 +5,17 @@ import type { ExistingEvent, NewEvent } from "./eventTypes";
 export const getAllEvents = () => {
   return prisma.event.findMany({
     where: { isDeleted: false },
-    include: { employe: true, etudiants: true },
+    include: {
+      employe: {
+        omit: {
+          deletedAt: true,
+          isDeleted: true,
+          updatedAt: true,
+          salaire: true,
+        },
+      },
+      etudiants: true,
+    },
     omit: {
       isDeleted: true,
       deletedAt: true,
@@ -23,6 +33,16 @@ export const getEventById = (
     where: {
       id: eventId,
       isDeleted: false,
+    },
+    include: {
+      employe: {
+        omit: {
+          deletedAt: true,
+          isDeleted: true,
+          updatedAt: true,
+          salaire: true,
+        },
+      },
     },
     omit: {
       isDeleted: true,
@@ -84,9 +104,9 @@ export const updateEvent = (event: ExistingEvent): Promise<ExistingEvent> => {
 };
 
 // Delete An Event
-export const deleteEvent = (event: ExistingEvent): Promise<ExistingEvent> => {
+export const deleteEvent = (eventId: number): Promise<ExistingEvent> => {
   return prisma.event.update({
-    where: { id: event.id },
+    where: { id: eventId },
     data: {
       isDeleted: true,
       deletedAt: new Date(),

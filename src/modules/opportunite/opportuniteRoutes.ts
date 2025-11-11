@@ -27,8 +27,8 @@ opportunityRoutes.put(
   opportunityOpportunity.updateOpportunity
 );
 
-// Delete Opportunity
-opportunityRoutes.put(
+// Delete Opportunity -- NOT TESTED YET
+opportunityRoutes.delete(
   "/opportunities/:opportunityId",
   opportunityOpportunity.deleteOpportunity
 );
