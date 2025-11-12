@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import * as GroupService from "groupeService";
+import * as GroupService from "./groupeService";
 
 
   export const createGroupe = async (req: Request, res: Response)=> {

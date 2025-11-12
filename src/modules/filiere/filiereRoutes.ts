@@ -1,24 +1,24 @@
 import { Router } from "express";
-import * as FiliereController from "filiereController";
+import * as FiliereController from "./filiereController";
 
 const router = Router();
 
-// Créer une filière
-router.post("/", FiliereController.createFilere);
+// Créer une filière -- TESTED 
+router.post("/filiere", FiliereController.createFilere);
 
-// Récupérer toutes les filières
-router.get("/", FiliereController.getAllFilieres);
+// Récupérer toutes les filières  -- TESTED 
+router.get("/filiere", FiliereController.getAllFilieres);
 
-// Récupérer une filière par ID
-router.get("/:id", FiliereController.getFiliereById);
+// Récupérer une filière par ID -- TESTED
+router.get("/filiere/:id", FiliereController.getFiliereById);
 
-// Mettre à jour une filière
-router.put("/:id", FiliereController.updateFiliere);
+// Mettre à jour une filière --TESTED 
+router.put("/filiere/:id", FiliereController.updateFiliere);
 
-// Supprimer une filière
-router.delete("/:id", FiliereController.deletefiliere);
+// Supprimer une filière -- TESTED 
+router.delete("/filiere/:id", FiliereController.deletefiliere);
 
-// Récupérer les étudiants d'une filière
-router.get("/:id/etudiants", FiliereController.getEtudiants);
+// Récupérer les étudiants d'une filière -- TESTED 
+router.get("/filiere/:id/etudiants", FiliereController.getEtudiantsByFiliere);
 
 export default router;
