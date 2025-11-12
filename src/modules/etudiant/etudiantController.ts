@@ -13,6 +13,7 @@ export const createEtudiantController = async (req: Request, res: Response) => {
 
     res.status(201).json(etudiant);
   } catch (error) {
+    
     console.error("Erreur lors de la création de l'étudiant :", error);
     res.status(500).json({ error: "Erreur lors de la création de l'étudiant." });
   }
@@ -125,9 +126,22 @@ export const listEtudiantsByGroupe = async (req: Request, res: Response) => {
 export const listEtudiantsByFiliere = async (req: Request, res: Response) => {
   try {
     const idFiliere = Number(req.params.idFiliere);
+    if (isNaN(idFiliere)) {
+      return res.status(400).json({ message: "ID de filière invalide" });
+    }
+
     const etudiants = await getEtudiantsByFiliere(idFiliere);
-    res.json(etudiants);
-  } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la récupération des étudiants par filière", error });
+
+    if (etudiants.length === 0) {
+      return res.status(404).json({ message: "Aucun étudiant trouvé pour cette filière" });
+    }
+
+    res.status(200).json(etudiants);
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Erreur lors de la récupération des étudiants par filière",
+      error: error.message,
+    });
   }
 };
+
