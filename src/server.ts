@@ -15,6 +15,12 @@ app.use("/api/v1", allRoutes.eventRoutes);
 // Use Event Routes
 app.use("/api/v1", allRoutes.opportunityRoutes);
 
+// Use Role Routes
+app.use("/api/v1", allRoutes.roleRoutes);
+
+// Use Permission Routes
+app.use("/api/v1", allRoutes.permissionRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT: ${PORT}`);
 });
