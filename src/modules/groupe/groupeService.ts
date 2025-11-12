@@ -1,6 +1,6 @@
 import prisma from "../../config/prisma"
 
-import type { GroupeCreate, GroupeUpdate } from "groupeTypes";
+import type { GroupeCreate, GroupeUpdate } from "./groupeTypes";
 
 
 
