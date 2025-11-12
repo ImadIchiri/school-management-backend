@@ -17,14 +17,17 @@ export const getCandidatById = async (id: number) => {
 
 export const createCandidat = async (data: NewCandidat) => {
   return await prisma.candidat.create({
-    data: { 
+    data: {
       ...data,
       dateCandidature: new Date(),
-    }
-    });
+    },
+  });
 };
 
-export const updateCandidat = async (id: number, data: ExistingCandidat) => {
+export const updateCandidat = async (
+  id: number,
+  data: Partial<ExistingCandidat>
+) => {
   return await prisma.candidat.update({
     where: { idCandidature: id },
     data,

@@ -1,7 +1,7 @@
 export type NewUser = {
   nom: string;
   prenom: string;
-  dateNaissance: string;
+  dateNaissance: Date;
   adresse: string;
   telephone: string;
   email: string;
@@ -17,10 +17,10 @@ export type ExistingUser = NewUser & {
   id: number;
   createdAt?: Date;
   updatedAt?: Date;
-  deletedAt?: Date;
+  deletedAt?: Date | null;
   isDeleted?: boolean;
 
-  roleId?: number;
+  roleId?: number | null;
   role?: any;
 
   candidat?: any;

@@ -16,11 +16,8 @@ export const getAllUsers = async () => {
 };
 
 export const getUserById = async (userId: number): Promise<ExistingUser> => {
-  return await prisma.user.findUnique({
-    where: {
-      id: userId,
-      isDeleted: false,
-    },
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
     include: {
       role: true,
       candidat: true,
@@ -28,8 +25,13 @@ export const getUserById = async (userId: number): Promise<ExistingUser> => {
       employe: true,
       parent: true,
     },
-    omit: { isDeleted: true },
-  } as any);
+  });
+
+  if (!user || user.isDeleted) {
+    throw new Error("Utilisateur introuvable");
+  }
+
+  return user as ExistingUser;
 };
 
 export const createUser = async (user: NewUser): Promise<ExistingUser> => {
