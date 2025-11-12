@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import * as FiliereService from "filiereService";
+import * as FiliereService from "./filiereService";
 //import type { FiliereCreate ,FiliereUpdate} from "filiereTypes";
 
 
@@ -32,14 +32,17 @@ import * as FiliereService from "filiereService";
       if (!filiere) {
         return res.status(404).json({ message: "Filière non trouvée" });
       }
-      res.status(200).json(filiere);
+      res.status(200).json({
+        success: true,
+        data: filiere,
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message || "Erreur interne" });
     }
   }
 
   //Mettre à jour une filière
-   export const updateFiliere = async(req: Request, res: Response) => {
+  export const updateFiliere = async(req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
       const { nom, description } = req.body;
@@ -62,7 +65,7 @@ import * as FiliereService from "filiereService";
   }
 
   //Lister les étudiants d’une filière
-   export const getEtudiants = async(req: Request, res: Response) => {
+   export const getEtudiantsByFiliere = async(req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
       const etudiants = await FiliereService.getEtudiantsByFiliere(id);
