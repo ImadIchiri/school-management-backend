@@ -15,12 +15,12 @@ export type ExistingOpportunity = NewOpportunity & {
   employe?: {
     idEmploye: number;
     poste: string;
-    salaire: number;
+    salaire?: number;
     userId: number;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date | null;
-    isDeleted: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    deletedAt?: Date | null;
+    isDeleted?: boolean;
   };
 
   etudiants?: {
