@@ -1,8 +1,8 @@
 import prisma from "../../config/prisma"
-import type { NiveauCreate, NiveauUpdate } from "niveauTypes";
+import type { NiveauCreate, NiveauUpdate } from "./niveauTypes";
 
 
-  // Créer un niveauFG
+  // Créer un niveauFG 
   export const createNiveau= async (data: NiveauCreate) => {
     return await prisma.niveauScolaire.create({ data });
   }
@@ -22,7 +22,7 @@ import type { NiveauCreate, NiveauUpdate } from "niveauTypes";
     });
   }
 
-  // Mettre à jour un niveau
+  // Mettre à jour un niveau 
   export const updateNiveau = async (id: number, data: NiveauUpdate) => {
     return await prisma.niveauScolaire.update({
       where: { id },
@@ -30,12 +30,12 @@ import type { NiveauCreate, NiveauUpdate } from "niveauTypes";
     });
   }
 
-  // Supprimer un niveau
+  // Supprimer un niveau 
  export const deleteNiveau = async(id: number) => {
     return await prisma.niveauScolaire.delete({ where: { id } });
   }
 
-  // Lister les groupes d'un niveau
+  // Lister les groupes d'un niveau 
   export const getGroupesByNiveau = async (id: number) => {
     return await prisma.groupe.findMany({
       where: { niveauId: id }
