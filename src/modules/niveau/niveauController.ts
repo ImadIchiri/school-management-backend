@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 import * as NiveauService from "./niveauService";
+
+
 export const createNiveau = async (req: Request, res: Response) => {
   try {
     const { anneeLabel, dateDebut, dateFin, filiereId } = req.body;
@@ -9,7 +11,7 @@ export const createNiveau = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message || "Erreur interne" });
   }
 }
-  export const  getAllNiveaux = async(req: Request, res: Response) =>{
+export const  getAllNiveaux = async(req: Request, res: Response) =>{
     try {
       const niveaux = await NiveauService.getAllNiveaux();
       res.status(200).json(niveaux);
