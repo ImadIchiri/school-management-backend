@@ -81,6 +81,7 @@ export const getEtudiantsByFiliere = async (idFiliere: number) => {
   });
 };
 
+
 // Étudiants par niveau
 export const getEtudiantsByNiveau = async (niveauId: number) => {
   return prisma.etudiant.findMany({
