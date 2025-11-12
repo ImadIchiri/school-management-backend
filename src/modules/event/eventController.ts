@@ -66,7 +66,7 @@ export const getEventById = async (
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error?.message || "Internal Server Error Getting All Events",
+      message: error?.message || "Internal Server Error Getting Event By Id",
     });
   }
 };
@@ -192,14 +192,14 @@ export const updateEvent = async (req: Request, res: Response) => {
 */
 export const deleteEvent = async (req: Request, res: Response) => {
   try {
-    const { eventId: evenIdParams } = req.params;
+    const { eventId: eventIdParams } = req.params;
     const { eventId: eventIdBody }: { eventId: number | undefined } = req.body;
 
     // Check if Ids are the same
     if (
-      evenIdParams === undefined ||
+      eventIdParams === undefined ||
       eventIdBody === undefined ||
-      parseInt(evenIdParams) !== eventIdBody
+      parseInt(eventIdParams) !== eventIdBody
     ) {
       return res.status(400).json({
         success: false,
