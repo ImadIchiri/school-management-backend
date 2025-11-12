@@ -5,7 +5,18 @@ import { ExistingOpportunity, NewOpportunity } from "./opportuniteTypes";
 export const getAllOpportunities = () => {
   return prisma.opportunite.findMany({
     where: { isDeleted: false },
-    include: { employe: true, etudiants: true },
+    include: {
+      employe: {
+        omit: {
+          createdAt: true,
+          deletedAt: true,
+          isDeleted: true,
+          salaire: true,
+          updatedAt: true,
+        },
+      },
+      etudiants: true,
+    },
     omit: {
       isDeleted: true,
       deletedAt: true,
@@ -23,6 +34,17 @@ export const getOpportunityById = (
     where: {
       id: opportunityId,
       isDeleted: false,
+    },
+    include: {
+      employe: {
+        omit: {
+          createdAt: true,
+          deletedAt: true,
+          isDeleted: true,
+          salaire: true,
+          updatedAt: true,
+        },
+      },
     },
     omit: {
       isDeleted: true,
@@ -66,16 +88,16 @@ export const createOpportunity = (
   });
 };
 
-// Update An Opportunity - opportunite: { id, titre, type, employeId }
+// Update An Opportunity - opportunity: { id, titre, type, employeId }
 export const updateOpportunity = (
-  opportunite: ExistingOpportunity
+  opportunity: ExistingOpportunity
 ): Promise<ExistingOpportunity> => {
   return prisma.opportunite.update({
-    where: { id: opportunite.id },
+    where: { id: opportunity.id },
     data: {
-      id: opportunite.id,
-      titre: opportunite.titre,
-      employeId: opportunite.employeId,
+      titre: opportunity.titre,
+      type: opportunity.type,
+      employeId: opportunity.employeId,
     },
     omit: {
       isDeleted: true,
@@ -88,10 +110,10 @@ export const updateOpportunity = (
 
 // Delete An Opportunity
 export const deleteOpportunity = (
-  opportunity: ExistingOpportunity
+  opportuniteyId: number
 ): Promise<ExistingOpportunity> => {
   return prisma.opportunite.update({
-    where: { id: opportunity.id },
+    where: { id: opportuniteyId },
     data: {
       isDeleted: true,
       deletedAt: new Date(),
