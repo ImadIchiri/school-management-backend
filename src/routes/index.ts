@@ -22,6 +22,8 @@ import etudiantRoutes from "../modules/etudiant/etudiantRoutes";
 
 import parentRoutes from "../modules/parent/parentRoutes";
 
+import authRoutes from "../modules/auth/authRoutes";
+
 // Export All Routes
 export {
   eventRoutes,
@@ -34,4 +36,5 @@ export {
   parentRoutes,
   roleRoutes,
   permissionRoutes,
+  authRoutes,
 };

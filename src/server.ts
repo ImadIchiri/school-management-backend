@@ -14,6 +14,9 @@ app.use(express.json());
 //   app.use("/api/v1", routesList as any);
 // });
 
+// Use Auth Routes
+app.use("/api/v1", allRoutes.authRoutes);
+
 // Use Event Routes
 app.use("/api/v1", allRoutes.eventRoutes);
 

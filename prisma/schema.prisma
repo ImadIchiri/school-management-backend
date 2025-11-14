@@ -81,6 +81,17 @@ model RolePermission {
   isDeleted Boolean   @default(false)
 }
 
+model RefreshToken {
+  id          String   @id @unique @default(uuid())
+  hashedToken String   @unique
+  userId      Int
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expireAt    DateTime
+}
+
 model User {
   id            Int      @id @default(autoincrement())
   nom           String
@@ -104,6 +115,8 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   isDeleted Boolean   @default(false)
+
+  refreshTokens RefreshToken[]
 
   Ressource Ressource[]
 }
