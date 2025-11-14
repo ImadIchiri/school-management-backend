@@ -3,8 +3,6 @@ import * as userService from "./userService";
 import type { ExistingUser, NewUserWithId } from "./userTypes";
 import prisma from "../../config/prisma";
 import bcrypt from "bcrypt";
-import { generateTokens } from "../../utils/jwt";
-import { addRefreshTokenToWhitelist } from "../auth/authService";
 
 /* Get All Users */
 export const getAllUsers = async (req: Request, res: Response) => {
