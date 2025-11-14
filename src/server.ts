@@ -46,6 +46,14 @@ app.use("/api/v1", allRoutes.etudiantRoutes);
 
 // Use Parent Routes
 app.use("/api/v1", allRoutes.parentRoutes);
+// Use Planning Routes
+app.use("/api/v1", allRoutes.planningRoutes);
+
+// Use Absence Routes
+app.use("/api/v1/absence", allRoutes.absenceRoutes);
+
+// Use Examen Routes
+app.use("/api/v1/examen", allRoutes.examenRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT: ${PORT}`);

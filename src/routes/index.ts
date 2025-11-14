@@ -24,6 +24,13 @@ import parentRoutes from "../modules/parent/parentRoutes";
 
 import authRoutes from "../modules/auth/authRoutes";
 
+// Import opportunity Routes
+import planningRoutes from "../modules/planning/planningRoutes";
+
+import absenceRoutes from "../modules/absence/absenceRoutes";
+
+import examenRoutes from "../modules/examen/examenRoutes";
+
 // Export All Routes
 export {
   eventRoutes,
@@ -37,4 +44,7 @@ export {
   roleRoutes,
   permissionRoutes,
   authRoutes,
+  planningRoutes,
+  absenceRoutes,
+  examenRoutes,
 };
