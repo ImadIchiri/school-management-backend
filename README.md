@@ -54,3 +54,9 @@ Install my-project with npm
 ```bash
     psql -h localhost -p 5005 -U postgres -d schoolmanage
 ```
+
+#### Run Prisma Seed
+
+```bash
+    npx prisma db seed
+```
