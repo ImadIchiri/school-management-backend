@@ -187,7 +187,8 @@ export const deleteUser = async (req: Request, res: Response) => {
       data: deletedUser,
     });
   } catch (error) {
-    console.log(`Error while deleting User ${error}`);
+    // console.log(`Error while deleting User ${error}`);
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: `Error While Deleting User`,

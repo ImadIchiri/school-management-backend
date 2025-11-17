@@ -3,10 +3,10 @@ import * as etudiantController from "./etudiantController";
 // Routes etudiant
 const router = Router();
 
-router.post("/", etudiantController.createEtudiant);
-router.get("/", etudiantController.getAllEtudiants);
-router.get("/:id", etudiantController.getEtudiantById);
-router.put("/:id", etudiantController.updateEtudiant);
-router.delete("/:id", etudiantController.deleteEtudiant);
+router.get("/etudiants", etudiantController.getAllEtudiants);
+router.get("/etudiants/:etudiantId", etudiantController.getEtudiantById);
+router.post("/etudiants", etudiantController.createEtudiant);
+router.put("/etudiants/:etudiantId", etudiantController.updateEtudiant);
+router.delete("/etudiants", etudiantController.deleteEtudiant);
 
 export default router;

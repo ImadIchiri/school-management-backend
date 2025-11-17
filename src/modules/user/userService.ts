@@ -66,7 +66,7 @@ export const deleteUser = async (user: ExistingUser): Promise<ExistingUser> => {
     where: { id: user.id },
     data: {
       isDeleted: true,
-      // deletedAt: new Date(), // if you track deletedAt, ensure field in model
+      deletedAt: new Date(), // if you track deletedAt, ensure field in model
     } as any,
   });
 };

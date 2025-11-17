@@ -15,7 +15,9 @@ export const getCandidatById = async (id: number) => {
   });
 };
 
-export const createCandidat = async (data: NewCandidat) => {
+export const createCandidat = async (
+  data: NewCandidat
+): Promise<ExistingCandidat> => {
   return await prisma.candidat.create({
     data: {
       ...data,
