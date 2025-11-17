@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserForToken } from "../modules/user/userTypes";
 
@@ -22,8 +23,12 @@ type GenerateTokensType = {
   accessToken: string;
   refreshToken: string;
 };
+
 export const generateTokens = (user: UserForToken): GenerateTokensType => {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken();
   return { accessToken, refreshToken };
 };
+
+export const hashPassword = (password: string): Promise<string> =>
+  bcrypt.hash(password, 12);

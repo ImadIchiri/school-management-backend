@@ -3,6 +3,7 @@ import * as userService from "./userService";
 import type { ExistingUser, NewUserWithId } from "./userTypes";
 import prisma from "../../config/prisma";
 import bcrypt from "bcrypt";
+import { hashPassword } from "../../utils/jwt";
 
 /* Get All Users */
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -105,16 +106,9 @@ export const createUser = async (req: Request, res: Response) => {
       adresse,
       telephone,
       email,
-      password: bcrypt.hashSync(password, 12),
+      password: await hashPassword(password),
       roleId,
     });
-
-    // ############## This code will be moved to Login Section ##############
-    // const { accessToken, refreshToken } = generateTokens({
-    //   id: user.id,
-    //   role: { id: role?.id as number, name: role?.name as string },
-    // });
-    // await addRefreshTokenToWhitelist({ refreshToken, userId: user.id });
 
     return res.status(201).json({
       success: true,
