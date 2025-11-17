@@ -337,7 +337,7 @@ model Ressource {
   deletedAt DateTime?
   isDeleted Boolean   @default(false)
 
-  uploadedById Int?
+  uploadedById Int
   uploadedBy   User? @relation(fields: [uploadedById], references: [id])
 
   typeId Int

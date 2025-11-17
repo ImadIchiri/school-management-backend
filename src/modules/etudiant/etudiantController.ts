@@ -107,11 +107,9 @@ export const getEtudiantsByFiliereController = async (
       "Erreur lors de la récupération des étudiants par filière :",
       error
     );
-    res
-      .status(500)
-      .json({
-        error: "Erreur lors de la récupération des étudiants par filière.",
-      });
+    res.status(500).json({
+      error: "Erreur lors de la récupération des étudiants par filière.",
+    });
   }
 };
 
@@ -129,11 +127,9 @@ export const getEtudiantsByNiveauController = async (
       "Erreur lors de la récupération des étudiants par niveau :",
       error
     );
-    res
-      .status(500)
-      .json({
-        error: "Erreur lors de la récupération des étudiants par niveau.",
-      });
+    res.status(500).json({
+      error: "Erreur lors de la récupération des étudiants par niveau.",
+    });
   }
 };
 
@@ -151,11 +147,9 @@ export const getEtudiantsByGroupeController = async (
       "Erreur lors de la récupération des étudiants par groupe :",
       error
     );
-    res
-      .status(500)
-      .json({
-        error: "Erreur lors de la récupération des étudiants par groupe.",
-      });
+    res.status(500).json({
+      error: "Erreur lors de la récupération des étudiants par groupe.",
+    });
   }
 };
 
@@ -165,12 +159,10 @@ export const listEtudiantsByGroupe = async (req: Request, res: Response) => {
     const etudiants = await getEtudiantsByGroupe(idGroupe);
     res.json(etudiants);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Erreur lors de la récupération des étudiants par groupe",
-        error,
-      });
+    res.status(500).json({
+      message: "Erreur lors de la récupération des étudiants par groupe",
+      error,
+    });
   }
 };
 
