@@ -4,7 +4,7 @@ import type { IEtudiant } from "./etudiantTypes";
 const prisma = new PrismaClient();
 
 export const createEtudiant = async (etudiant: IEtudiant) => {
-  return prisma.etudiant.create({ data: etudiant, });
+  return prisma.etudiant.create({ data: etudiant });
 };
 
 export const getAllEtudiants = async () => {
@@ -29,13 +29,14 @@ export const getEtudiantById = async (id: number) => {
 
 export const updateEtudiant = async (id: number, data: Partial<IEtudiant>) => {
   return prisma.etudiant.update({
-     where: { idEtudiant: id },
-     data: data });
+    where: { idEtudiant: id },
+    data: data,
+  });
 };
 
 export const deleteEtudiant = async (id: number) => {
   return prisma.etudiant.update({
     where: { idEtudiant: id },
-    data: { isDeleted: true },
+    data: { isDeleted: true, deletedAt: new Date() },
   });
 };
