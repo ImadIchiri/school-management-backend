@@ -9,10 +9,10 @@ import {
 
 const router = Router();
 
-router.post("/", createParentController);
-router.get("/", getAllParentsController);
-router.get("/:id", getParentController);
-router.put("/:id", updateParentController);
-router.delete("/:id", deleteParentController);
+router.get("/parents", getAllParentsController);
+router.get("/parents/:id", getParentController);
+router.post("/parents", createParentController);
+router.put("/parents/:id", updateParentController);
+router.delete("/parents", deleteParentController);
 
 export default router;
