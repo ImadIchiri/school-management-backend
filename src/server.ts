@@ -54,6 +54,14 @@ app.use("/api/v1/absence", allRoutes.absenceRoutes);
 
 // Use Examen Routes
 app.use("/api/v1/examen", allRoutes.examenRoutes);
+// Use Filiere Routes
+app.use("/api/v1", allRoutes.filiereRoutes);
+// Use groupe Routes
+app.use("/api/v1", allRoutes.groupeRoutes);
+// Use niveau Routes
+app.use("/api/v1", allRoutes.niveauRoutes);
+// Use etudiant Routes
+app.use("/api/v1", allRoutes.etudiantRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT: ${PORT}`);
