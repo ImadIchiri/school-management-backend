@@ -26,6 +26,9 @@ RUN npx prisma generate
 # Build TypeScript
 RUN npm run build
 
+# Copy Prisma client into dist (so it exists at runtime)
+RUN cp -r src/generated/prisma dist/generated/prisma
+
 
 # ================================
 # 2️⃣ Run Stage (Smaller image)
