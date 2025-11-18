@@ -33,7 +33,10 @@ export const getRessourceById = async (id: number) => {
 export const updateRessource = async (id: number, data: RessourceUpdate) => {
   return await prisma.ressource.update({
     where: { id },
-    data,
+    data: {
+      id,
+      ...data,
+    },
   });
 };
 
@@ -51,4 +54,3 @@ export const deleteRessource = async (id: number) => {
     where: { id },
   });
 };
-
