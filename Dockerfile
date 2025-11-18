@@ -1,7 +1,7 @@
 # ================================
 # 1️⃣ Build Stage (Node.js + TypeScript)
 # ================================
-FROM node:20-alpine AS builder
+FROM node:20 AS builder
 
 # Set working directory
 WORKDIR /app
