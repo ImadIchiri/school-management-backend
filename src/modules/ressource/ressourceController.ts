@@ -8,24 +8,27 @@ import type { RessourceCreate, RessourceUpdate } from "./ressourceTypes";
  */
 export const uploadRessource = async (req: Request, res: Response) => {
   try {
-    const { titre, description, typeId } = req.body;
+    const { titre, description, typeId, uploadedById } = req.body;
 
-    if (!titre || !typeId || !req.file) {
-      return res.status(400).json({ error: "titre, typeId et fichier sont requis" });
+    if (!titre || !typeId || !uploadedById || !req.file) {
+      return res
+        .status(400)
+        .json({ error: "titre, typeId et fichier sont requis" });
     }
 
     // Upload sur Firebase
-    const firebasePath = `schoolManagement/${req.file.originalname}-${Date.now()}`;
+    const firebasePath = `${process.env.FIREBASE_STORAGE_FOLDER_NAME}/${
+      req.file.originalname
+    }-${Date.now()}`;
     const url = await uploadToFirebase(req.file.buffer, firebasePath);
-
 
     // Préparer les données à enregistrer dans Prisma
     const data: RessourceCreate = {
       titre,
       description,
-      typeId: Number(typeId),
-      uploadedById: null,
       url,
+      uploadedById,
+      typeId: Number(typeId),
     };
 
     const newRessource = await ressourceService.createRessource(data);
@@ -50,7 +53,9 @@ export const getAllRessources = async (req: Request, res: Response) => {
     return res.status(200).json(ressources);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Impossible de récupérer les ressources" });
+    return res
+      .status(500)
+      .json({ error: "Impossible de récupérer les ressources" });
   }
 };
 
@@ -70,7 +75,9 @@ export const getRessourceById = async (req: Request, res: Response) => {
     return res.status(200).json(ressource);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Impossible de récupérer la ressource" });
+    return res
+      .status(500)
+      .json({ error: "Impossible de récupérer la ressource" });
   }
 };
 
@@ -80,9 +87,15 @@ export const getRessourceById = async (req: Request, res: Response) => {
 export const updateRessource = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const { titre, description,url, typeId, uploadedById } = req.body;
+    const { titre, description, url, typeId, uploadedById } = req.body;
 
-    const data: RessourceUpdate = { titre, description,url, typeId, uploadedById };
+    const data: RessourceUpdate = {
+      titre,
+      description,
+      url,
+      typeId,
+      uploadedById,
+    };
 
     const updated = await ressourceService.updateRessource(id, data);
 
