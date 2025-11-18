@@ -1,37 +1,23 @@
-// export type coursType = {
-//   id: number;
-//   titre: string;
-//   dateDebut: Date;
-//   dateFin: Date;
-//   moduleId: number;
-//   description?: string | null; 
-//   duree?: number | null;       
-//   enseignantId?: number | null;
-//   salleId?: number | null;
-//   createdAt: Date;
-//   updatedAt: Date;
-//   isDeleted: boolean;
-//   module?: moduleType | null;  
-// };
-
-export type moduleType = {
+// Type principal d’un module
+export type Module = {
   id: number;
   nom: string;
   description: string;
   niveauId: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
-  cours?: {
-    id: number;
-    description: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-    isDeleted: boolean;
-    titre: string;
-    dateDebut: Date;
-    dateFin: Date;
-    duree: number | null;
-    moduleId: number;
-    enseignantId: number | null;
-    salleId: number | null;
-  }[];
-}
+// Type utilisé lors de la création d’un module
+export type moduleCreate = {
+  nom: string;
+  description: string;
+  niveauId: number;
+};
+
+// Type utilisé lors de la mise à jour d’un module
+export type moduleUpdate = {
+  nom?: string;
+  description: string;
+  niveauId?: number;
+};

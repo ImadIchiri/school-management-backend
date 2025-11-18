@@ -1,34 +1,43 @@
-// Import the functions you need from the SDKs you need
-// import { initializeApp } from "firebase/app";
-// import { getStorage } from "firebase/storage";
-// import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import admin from "firebase-admin";
+import { v4 as uuidv4 } from "uuid";
+import path from "path";
 
-// Firestore setup
-// const {
-//   API_KEY,
-//   AUTH_DOMAIN,
-//   PROJECT_ID,
-//   BUCKET,
-//   SENDER_ID,
-//   APP_ID,
-//   MEAUREMENT_ID,
-// } = process.env;
+// Chemin vers le fichier JSON à la racine
+const serviceAccountPath = path.join(
+  __dirname,
+  "../../firebase-service-account.json"
+);
+const serviceAccount = require(serviceAccountPath);
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// const firebaseConfig = {
-//   apiKey: API_KEY as string,
-//   authDomain: AUTH_DOMAIN as string,
-//   projectId: PROJECT_ID as string,
-//   storageBucket: BUCKET as string,
-//   messagingSenderId: SENDER_ID as string,
-//   appId: APP_ID as string,
-//   measurementId: MEAUREMENT_ID as string, // optional
-// };
+// Initialisation Firebase Admin
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: "exam9-1.appspot.com",
+  });
+}
 
-// Initialize Firebase
-// export const firebaseApp = initializeApp(firebaseConfig);
-// export const firestore = getStorage(firebaseApp);
-// const analytics = getAnalytics(firebaseApp);
+const bucket = admin.storage().bucket();
+
+/**
+ * Upload depuis un buffer vers Firebase Storage
+ */
+export const uploadToFirebase = async (
+  fileBuffer: Buffer,
+  filename: string
+): Promise<string> => {
+  const uuid = uuidv4();
+  const file = bucket.file(filename);
+
+  await file.save(fileBuffer, {
+    metadata: {
+      metadata: {
+        firebaseStorageDownloadTokens: uuid,
+      },
+    },
+  });
+
+  return `https://firebasestorage.googleapis.com/v0/b/${
+    bucket.name
+  }/o/${encodeURIComponent(filename)}?alt=media&token=${uuid}`;
+};

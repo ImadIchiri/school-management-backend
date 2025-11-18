@@ -40,6 +40,11 @@ import niveauRoutes from "../modules/niveau/niveauRoutes";
 // Import etudiant Routes
 import etudiantRoute from "../modules/etudiant/etudiantRoute";
 
+import moduleRoutes from "../modules/module/moduleRoutes";
+import coursRoutes from "../modules/cours/coursRoutes";
+// Import Ressource Routes
+import ressourceRoutes from "../modules/ressource/ressourceRoutes";
+
 // Export All Routes
 export {
   eventRoutes,
@@ -60,4 +65,7 @@ export {
   groupeRoutes,
   niveauRoutes,
   etudiantRoute,
+  moduleRoutes,
+  coursRoutes,
+  ressourceRoutes,
 };

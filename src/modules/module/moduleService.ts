@@ -1,78 +1,54 @@
-import prisma from "../../config/prisma.js";
-import type { moduleType} from "./moduleTypes.js";
+import prisma from "../../config/prisma";
+import type {moduleCreate,moduleUpdate} from "./moduleTypes";
+/**
+ * Créer un module
+ */
+export const createModule = async (data:moduleCreate) => {
+  return await prisma.module.create({ data });
+};
 
-// Get All modules
-export const getAllModules = async ():Promise<moduleType[]>=> {
-  return prisma.module.findMany({
-    where: { isDeleted: false },
-    include: { cours: true },
-    omit:{
-      isDeleted:true,
-      createdAt:true,
-      updatedAt:true,
+/**
+ * Récupérer tous les modules
+ */
+export const getAllModules = async () => {
+  return await prisma.module.findMany({
+    include:{niveau:true,
+      cours:true,
+      examens:true,
+      enseignants:true,
     }
   });
 };
 
-// Get module by ID
-export const getModuleById =(id: number): Promise<moduleType | null>=> {
-  return prisma.module.findUnique({
-    where: {
-      id
-    },
-    include: {
-      cours: true 
-    },
-    omit: {
-      isDeleted: true,
-      createdAt:true,
-      updatedAt:true,
-    },
+/**
+ * Récupérer un module par ID
+ */
+export const getModuleById = async (id: number) => {
+  return await prisma.module.findUnique({
+     where: { id },
+     include:{niveau:true,
+      cours:true,
+      examens:true,
+      enseignants:true,
+     } 
+    });
+};
+
+/**
+ * Mettre à jour un module
+ */
+export const updateModule = async (id: number,data:moduleUpdate) => {
+  return await prisma.module.update({
+    where: { id },
+    data
   });
 };
 
-// Create Module
-export const createModule =(data:Omit<moduleType,"id"|"cours">):Promise<moduleType> => {
-  return prisma.module.create({
-    data,
+/**
+ * Supprimer un module
+ */
+export const deleteModule = async (id: number) => {
+  return await prisma.module.delete({
+    where: { id },
   });
-};
-
-// Update Module
-export const updateModule = async (module:Omit<moduleType,"cours">&{id:number}):Promise<moduleType> => {
-   return await prisma.module.update({
-    where: { id: module.id },
-    data: {
-      nom: module.nom,
-      description: module.description,
-      niveauId: module.niveauId,
-    },
-  });
-};
-
-// Delete Module
-export const deleteModule = (module:{id:number}):Promise<moduleType> => {
-  return prisma.module.update({
-    where: { id: module.id },
-    data: { 
-      isDeleted: true,
-    },
-  });
-};
-// Get Module By Cours
-
-export const getModuleByCours = async(coursId:number):Promise<moduleType>=> {
-  const cours=await prisma.cours.findUnique({
-    where: { 
-      id:coursId,
-    },
-    include: { 
-      module: true 
-    },
-  });
-  if (!cours || !cours.module) {
-    throw new Error(`Module pour le cours id=${coursId} non trouvé`);
-  }
-  return cours.module;
-};
-
+}
