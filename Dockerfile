@@ -16,6 +16,10 @@ RUN npm install
 # Copy source files
 COPY . .
 
+# Fake DB URL ONLY for build (Railway) - Railway will inject the correct DATABASE_URL aftr the build stage
+ARG DATABASE_URL="postgresql://user:pass@localhost:5432/db"
+ENV DATABASE_URL=$DATABASE_URL
+
 # Generate Prisma client
 RUN npx prisma generate
 
