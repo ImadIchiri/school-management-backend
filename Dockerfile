@@ -30,7 +30,7 @@ RUN npm run build
 # ================================
 # 2️⃣ Run Stage (Smaller image)
 # ================================
-FROM node:20-alpine
+FROM node:20
 
 WORKDIR /app
 
