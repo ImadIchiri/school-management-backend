@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import * as moduleService from "./moduleService.js";
+import * as moduleService from "./moduleService";
 
 // Récupérer tous les modules
 export const getAllModules = async (req: Request, res: Response) => {
@@ -50,20 +50,13 @@ export const getModuleById = async (req: Request, res: Response) => {
 // Mettre à jour un module
 export const updateModule = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id  = Number(req.params.id);
     const { nom, description, niveauId } = req.body;
-
-    const existing = await moduleService.getModuleById(Number(id));
-    if (!existing) {
-      return res.status(404).json({ success: false, message: `Module non trouvé` });
-    }
-
-    const updated = await moduleService.updateModule({
-      id: Number(id),
-      nom,
+    const updated = await moduleService.updateModule(
+      id, {nom,
       description,
-      niveauId,
-    });
+      niveauId,}
+    );
 
     return res.status(200).json({
       success: true,
@@ -82,14 +75,8 @@ export const updateModule = async (req: Request, res: Response) => {
 // Supprimer un module
 export const deleteModuleById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-
-    const existing = await moduleService.getModuleById(Number(id));
-    if (!existing) {
-      return res.status(404).json({ success: false, message: `Module non trouvé` });
-    }
-
-    const deleted = await moduleService.deleteModule({ id: Number(id) });
+    const  id = Number(req.params.id);
+    const deleted = await moduleService.deleteModule(id);
 
     return res.status(200).json({
       success: true,

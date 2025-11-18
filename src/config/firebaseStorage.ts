@@ -1,21 +1,37 @@
-// Import the functions you need from the SDKs you need
-// import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import admin from "firebase-admin";
+import { v4 as uuidv4 } from "uuid";
+import path from "path";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// const firebaseConfig = {
-//   apiKey: "AIzaSyCKB3zKrAUvWBJ3E83tLlLw5vGvfrOqX1E",
-//   authDomain: "exam9-1.firebaseapp.com",
-//   projectId: "exam9-1",
-//   storageBucket: "exam9-1.appspot.com",
-//   messagingSenderId: "479705895775",
-//   appId: "1:479705895775:web:49446745724018e8cd5cea",
-//   measurementId: "G-0EGXDMH6KJ"
-// };
+// Chemin vers le fichier JSON à la racine
+const serviceAccountPath = path.join(__dirname, "../../firebase-service-account.json");
+const serviceAccount = require(serviceAccountPath);
 
-// Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
+// Initialisation Firebase Admin
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: "exam9-1.appspot.com", // ton bucket Firebase
+  });
+}
+
+const bucket = admin.storage().bucket();
+
+/**
+ * Upload depuis un buffer vers Firebase Storage
+ */
+export const uploadToFirebase = async (fileBuffer: Buffer, filename: string): Promise<string> => {
+  const uuid = uuidv4();
+  const file = bucket.file(filename);
+
+  await file.save(fileBuffer, {
+    metadata: {
+      metadata: {
+        firebaseStorageDownloadTokens: uuid,
+      },
+    },
+  });
+
+  return `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(
+    filename
+  )}?alt=media&token=${uuid}`;
+};

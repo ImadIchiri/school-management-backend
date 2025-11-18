@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import * as coursService from "./coursService.js";
+import * as coursService from "./coursService";
 
 export const getAllCours = async (req: Request, res: Response) => {
   try {
@@ -13,10 +13,9 @@ export const getAllCours = async (req: Request, res: Response) => {
 
 export const getCoursById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const cours = await coursService.getCoursById(Number(id));
-    if (!cours) return res.status(404).json({ error: "Cours non trouvé" });
-    return res.status(200).json(cours);
+    const id = Number(req.params.id);
+    const cours = await coursService.getCoursById(id);
+    res.status(200).json(cours);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Erreur lors de la récupération du cours" });
@@ -26,11 +25,7 @@ export const getCoursById = async (req: Request, res: Response) => {
 export const createCours = async (req: Request, res: Response) => {
   try {
     const { titre, description, dateDebut, dateFin, duree, moduleId, enseignantId, salleId } = req.body;
-    if (!titre || !dateDebut || !dateFin || !moduleId) {
-      return res.status(400).json({ error: "titre, dateDebut, dateFin et moduleId sont requis" });
-    }
-
-    const newCours = await coursService.createCours({
+    const cours = await coursService.createCours({
       titre,
       description,
       dateDebut: new Date(dateDebut),
@@ -41,7 +36,7 @@ export const createCours = async (req: Request, res: Response) => {
       salleId,
     });
 
-    return res.status(201).json(newCours);
+    return res.status(201).json(cours);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Impossible de créer le cours" });
@@ -50,24 +45,18 @@ export const createCours = async (req: Request, res: Response) => {
 
 export const updateCours = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
     const { titre, description, dateDebut, dateFin, duree, moduleId, enseignantId, salleId } = req.body;
-
-    const existing = await coursService.getCoursById(Number(id));
-    if (!existing) return res.status(404).json({ error: "Cours non trouvé" });
-
-    const updated = await coursService.updateCours({
-      id: Number(id),
-      titre,
+    const updated = await coursService.updateCours(
+      id,{titre,
       description,
-      dateDebut: dateDebut ? new Date(dateDebut) : existing.dateDebut,
-      dateFin: dateFin ? new Date(dateFin) : existing.dateFin,
+      dateDebut,
+      dateFin,
       duree,
       moduleId,
       enseignantId,
-      salleId,
-    });
-
+      salleId,}
+   );
     return res.status(200).json({ success: true, message: "Cours mis à jour", data: updated });
   } catch (error) {
     console.error(error);
@@ -77,11 +66,8 @@ export const updateCours = async (req: Request, res: Response) => {
 
 export const deleteCoursById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const existing = await coursService.getCoursById(Number(id));
-    if (!existing) return res.status(404).json({ error: "Cours non trouvé" });
-
-    const deleted = await coursService.deleteCours(Number(id));
+    const id =Number(req.params.id);
+    const deleted = await coursService.deleteCours(id);
     return res.status(200).json({ success: true, message: "Cours supprimé", data: deleted });
   } catch (error) {
     console.error(error);

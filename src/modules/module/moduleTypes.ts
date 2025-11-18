@@ -1,14 +1,23 @@
-export type moduleType = {
+// Type principal d’un module
+export type Module = {
   id: number;
   nom: string;
-  description: string; // obligatoire
+  description: string;
   niveauId: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  isDeleted?: boolean;
-  enseignants?: {
-    id: number;
-    enseignantId: number;
-    dateAffectation: Date;
-  }[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// Type utilisé lors de la création d’un module
+export type moduleCreate = {
+  nom: string;
+  description: string;
+  niveauId: number;
+};
+
+// Type utilisé lors de la mise à jour d’un module
+export type moduleUpdate = {
+  nom?: string;
+  description: string;
+  niveauId?: number;
 };

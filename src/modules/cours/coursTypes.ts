@@ -1,61 +1,41 @@
-export type coursType = {
+// Type principal d’un cours
+export type cours = {
   id: number;
   titre: string;
-  description: string | null;
+  description?: string; 
   dateDebut: Date;
   dateFin: Date;
-  duree?: number | null;
-  moduleId: number;
-  enseignantId?: number | null;
-  salleId?: number | null;
-  createdAt?: Date;
-  updatedAt?: Date;
+  duree?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
   isDeleted?: boolean;
+  moduleId: number;
+  enseignantId?: number;
+  salleId?: number;
+  salle?: any;
+};
 
-  module?: {
-    id: number;
-    nom: string;
-    description: string | null;
-    niveauId: number;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-  };
+// Type utilisé lors de la création d’un cours
+export type coursCreate = {
+  titre: string;
+  description?: string;
+  dateDebut: Date;
+  dateFin: Date;
+  duree?: number;
+  moduleId: number;
+  enseignantId?: number;
+  salleId?: number;
+};
 
-  enseignant?: {
-    idEnseignant: number;
-    specialite: string;
-  } | null;
-
-  salle?: {
-    id: number;
-    nom: string;
-    capacite: number;
-  } | null;
-
-  plannings?: {
-    id: number;
-    dateDebut: Date;
-    dateFin: Date;
-    description: string | null;
-    salleId: number;
-    enseignantId: number;
-  }[];
-
-  ressources?: {
-    ressource: {
-      id: number;
-      titre: string;
-      description: string | null;
-      url: string;
-    };
-  }[];
-
-  absences?: {
-    id: number;
-    date: Date;
-    motif?: string | null;
-    statut: string;
-    etudiantId: number;
-  }[];
+// Type utilisé lors de la mise à jour d’un cours
+export type coursUpdate = {
+  titre?: string;
+  description?: string;
+  dateDebut?: Date;
+  dateFin?: Date;
+  duree?: number;
+  moduleId?: number;
+  enseignantId?: number;
+  salleId?: number;
 };

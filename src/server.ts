@@ -24,6 +24,11 @@ app.use("/api/v1", allRoutes.niveauRoutes );
 // Use etudiant Routes
 app.use("/api/v1", allRoutes.etudiantRoute );
 
+app.use("/api/v1",allRoutes.moduleRoutes);
+app.use("/api/v1",allRoutes.coursRoutes);
+// Use Ressource Routes
+app.use("/api/v1/ressources", allRoutes.ressourceRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT: ${PORT}`);
 });
