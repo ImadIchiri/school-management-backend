@@ -7,4 +7,5 @@ node_modules
 postgres_data/
 
 dist/
+
 firebase-service-account.json
