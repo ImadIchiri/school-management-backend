@@ -1,7 +1,6 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import prisma from "../../config/prisma";
 import type { IEnseignant } from "./enseignantTypes";
 
-const prisma = new PrismaClient();
 
 export const createEnseignant = async (enseignant: IEnseignant) => {
   return prisma.enseignant.create({ data: enseignant });

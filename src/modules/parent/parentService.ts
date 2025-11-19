@@ -1,7 +1,6 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import prisma from "../../config/prisma";
 import type { IParent } from "./parentTypes";
 
-const prisma = new PrismaClient();
 
 export const createParent = async (parent: IParent) => {
   return prisma.parent.create({

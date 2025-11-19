@@ -1,7 +1,5 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import prisma from "../../config/prisma";
 import type { IEtudiant } from "./etudiantTypes";
-// Services Etudiant
-const prisma = new PrismaClient();
 
 export const createEtudiant = async (etudiant: IEtudiant) => {
   return prisma.etudiant.create({ data: etudiant });
