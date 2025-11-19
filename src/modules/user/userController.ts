@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import * as userService from "./userService";
 import type { ExistingUser, NewUserWithId } from "./userTypes";
 import prisma from "../../config/prisma";
+import bcrypt from "bcrypt";
+import { hashPassword } from "../../utils/jwt";
 
 /* Get All Users */
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -62,30 +64,39 @@ export const getUserById = async (req: Request, res: Response) => {
 
 /* 
   Create New User 
-  body; { nom, prenom, dateNaissance, adresse, telephone, email, password, roleId, }
+  body; { nom, prenom, dateNaissance, adresse, telephone, email, roleId, }
 */
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const {
-      nom,
-      prenom,
-      dateNaissance,
-      adresse,
-      telephone,
-      email,
-      password,
-      roleId,
-    } = req.body;
+    const { nom, prenom, dateNaissance, adresse, telephone, email, roleId } =
+      req.body;
+
+    const existingUser = await userService.getUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already in use.",
+      });
+    }
+
+    /*  
+      password example: Anwar#1996
+      Password will be sent by Email
+    */
+    const password = `${prenom}#${new Date(dateNaissance).getFullYear()}`;
 
     // Check if role exists
+    let role;
     if (roleId) {
-      const role = await prisma.role.findUnique({ where: { id: roleId } });
-      if (!role) {
+      const checkRole = await prisma.role.findUnique({ where: { id: roleId } });
+      if (!checkRole) {
         return res.status(404).json({
           success: false,
           message: `No Role Found With Id ${roleId}`,
         });
       }
+
+      role = checkRole;
     }
 
     const user: ExistingUser = await userService.createUser({
@@ -95,7 +106,7 @@ export const createUser = async (req: Request, res: Response) => {
       adresse,
       telephone,
       email,
-      password,
+      password: await hashPassword(password),
       roleId,
     });
 

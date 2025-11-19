@@ -5,9 +5,11 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-  binaryTargets = ["native", "windows"]
+  provider      = "prisma-client"
+  output        = "../src/generated/prisma"
+  // binaryTargets = ["native", "windows"]
+  // binaryTargets = ["native"]
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -81,6 +83,17 @@ model RolePermission {
   isDeleted Boolean   @default(false)
 }
 
+model RefreshToken {
+  id          String   @id @unique @default(uuid())
+  hashedToken String   @unique
+  userId      Int
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expireAt    DateTime
+}
+
 model User {
   id            Int      @id @default(autoincrement())
   nom           String
@@ -104,6 +117,8 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   isDeleted Boolean   @default(false)
+
+  refreshTokens RefreshToken[]
 
   Ressource Ressource[]
 }
@@ -324,7 +339,7 @@ model Ressource {
   deletedAt DateTime?
   isDeleted Boolean   @default(false)
 
-  uploadedById Int?
+  uploadedById Int
   uploadedBy   User? @relation(fields: [uploadedById], references: [id])
 
   typeId Int

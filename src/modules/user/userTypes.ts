@@ -28,3 +28,11 @@ export type ExistingUser = NewUser & {
   employe?: any;
   parent?: any;
 };
+
+export type UserForToken = {
+  id: number;
+  role: {
+    id: number;
+    name: String;
+  };
+};

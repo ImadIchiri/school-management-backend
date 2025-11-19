@@ -1,8 +1,8 @@
 import prisma from "../../config/prisma";
 import type { ExistingUser, NewUser, NewUserWithId } from "./userTypes";
 
-export const getAllUsers = async () => {
-  return await prisma.user.findMany({
+export const getAllUsers = () => {
+  return prisma.user.findMany({
     where: { isDeleted: false },
     include: {
       role: true,
@@ -67,6 +67,10 @@ export const deleteUser = async (user: ExistingUser): Promise<ExistingUser> => {
     data: {
       isDeleted: true,
       deletedAt: new Date(), // if you track deletedAt, ensure field in model
-    } as any,
+    },
   });
+};
+
+export const getUserByEmail = (email: any): Promise<ExistingUser | null> => {
+  return prisma.user.findUnique({ where: email });
 };

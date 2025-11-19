@@ -4,6 +4,12 @@ import eventRoutes from "../modules/event/eventRoutes";
 // Import opportunity Routes
 import opportunityRoutes from "../modules/opportunite/opportuniteRoutes";
 
+// Import Roles Routes
+import roleRoutes from "../modules/role/roleRoutes";
+
+// Import Permissions Routes
+import permissionRoutes from "../modules/permission/permissionRoutes";
+
 import userRoutes from "../modules/user/userRoutes";
 
 import candidatRoutes from "../modules/candidat/candidatRoutes";
@@ -16,6 +22,29 @@ import etudiantRoutes from "../modules/etudiant/etudiantRoutes";
 
 import parentRoutes from "../modules/parent/parentRoutes";
 
+import authRoutes from "../modules/auth/authRoutes";
+
+// Import opportunity Routes
+import planningRoutes from "../modules/planning/planningRoutes";
+
+import absenceRoutes from "../modules/absence/absenceRoutes";
+
+import examenRoutes from "../modules/examen/examenRoutes";
+
+// Import Filiere Routes
+import filiereRoutes from "../modules/filiere/filiereRoutes";
+// Import group Routes
+import groupeRoutes from "../modules/groupe/groupeRoutes";
+// Import niveaux Routes
+import niveauRoutes from "../modules/niveau/niveauRoutes";
+// Import etudiant Routes
+import etudiantRoute from "../modules/etudiant/etudiantRoute";
+
+import moduleRoutes from "../modules/module/moduleRoutes";
+import coursRoutes from "../modules/cours/coursRoutes";
+// Import Ressource Routes
+import ressourceRoutes from "../modules/ressource/ressourceRoutes";
+
 // Export All Routes
 export {
   eventRoutes,
@@ -26,4 +55,17 @@ export {
   enseignantRoutes,
   etudiantRoutes,
   parentRoutes,
+  roleRoutes,
+  permissionRoutes,
+  authRoutes,
+  planningRoutes,
+  absenceRoutes,
+  examenRoutes,
+  filiereRoutes,
+  groupeRoutes,
+  niveauRoutes,
+  etudiantRoute,
+  moduleRoutes,
+  coursRoutes,
+  ressourceRoutes,
 };
