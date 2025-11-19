@@ -49,10 +49,11 @@ ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
 # RUN MIGTATIONS INSIDE THE RUNTIME CONTAINER (Tables was not created before)
-RUN npx prisma migrate deploy
+# RUN npx prisma migrate deploy
 
 # Expose app port
 EXPOSE 3500
 
 # Default command
-CMD ["node", "dist/server.js"]
+# CMD ["node", "dist/server.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
