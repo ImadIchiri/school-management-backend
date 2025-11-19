@@ -1,17 +1,22 @@
-import express from "express";
+import {Router} from "express";
 import multer from "multer";
-import { uploadRessource, getAllRessources,deleteRessourceById,getRessourceById,updateRessource } from "./ressourceController";
-
-const router = express.Router();
+// import { uploadRessource,
+//      getAllRessources,
+//      deleteRessourceById,
+//      getRessourceById,
+//      updateRessource 
+//     } from "./ressourceController";
+import * as ressourceController from "./ressourceController";
+const ressourceRoutes =Router();
 
 // Multer en mémoire (pas de disque)
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 // Routes
-router.get("/", getAllRessources);
-router.get("/:id", getRessourceById);
-router.post("/upload", upload.single("file"), uploadRessource); // "file" = nom du champ form-data
-router.put("/:id",updateRessource);
-router.delete("/:id",deleteRessourceById);
+ressourceRoutes.get("/ressources", ressourceController.getAllRessources);
+ressourceRoutes.get("/ressources/:id", ressourceController.getRessourceById);
+ressourceRoutes.post("/ressources/upload", upload.single("file"), ressourceController.uploadRessource); // "file" = nom du champ form-data
+ressourceRoutes.put("/ressources/:id",ressourceController.updateRessource);
+ressourceRoutes.delete("/ressources/:id",ressourceController.deleteRessourceById);
 
-export default router;
+export default ressourceRoutes;

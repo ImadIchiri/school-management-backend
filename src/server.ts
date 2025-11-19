@@ -1,7 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import * as allRoutes from "./routes/index";
 
-import "dotenv/config";
+// import "dotenv/config";
 
 const PORT = process.env.PORT || 8088;
 const app = express();
@@ -27,7 +29,7 @@ app.use("/api/v1", allRoutes.etudiantRoute );
 app.use("/api/v1",allRoutes.moduleRoutes);
 app.use("/api/v1",allRoutes.coursRoutes);
 // Use Ressource Routes
-app.use("/api/v1/ressources", allRoutes.ressourceRoutes);
+app.use("/api/v1/",allRoutes.ressourceRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT: ${PORT}`);

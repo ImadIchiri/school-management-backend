@@ -1,5 +1,5 @@
 import prisma from "../../config/prisma";
-import type { RessourceCreate, RessourceUpdate } from "./ressourceTypes";
+import type { RessourceCreate, RessourceUpdate,ressource } from "./ressourceTypes";
 
 /**
  * Créer une ressource
