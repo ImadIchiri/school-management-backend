@@ -1,11 +1,6 @@
 import {Router} from "express";
 import multer from "multer";
-// import { uploadRessource,
-//      getAllRessources,
-//      deleteRessourceById,
-//      getRessourceById,
-//      updateRessource 
-//     } from "./ressourceController";
+
 import * as ressourceController from "./ressourceController";
 const ressourceRoutes =Router();
 
