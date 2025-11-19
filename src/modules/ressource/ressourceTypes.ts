@@ -1,6 +1,6 @@
 export type RessourceCreate = {
   titre: string;
-  description: string;
+  description?: string;
   url: string;
   uploadedById: number;
   typeId: number;
@@ -8,7 +8,7 @@ export type RessourceCreate = {
 
 export type RessourceUpdate = {
   titre: string;
-  description: string;
+  description?: string;
   url: string;
   uploadedById: number;
   typeId: number;

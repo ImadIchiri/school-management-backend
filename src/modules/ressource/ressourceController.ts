@@ -49,7 +49,9 @@ export const getAllRessources = async (req: Request, res: Response) => {
     return res.status(200).json(ressources);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Impossible de récupérer les ressources" });
+    return res
+      .status(500)
+      .json({ error: "Impossible de récupérer les ressources" });
   }
 };
 
@@ -67,7 +69,9 @@ export const getRessourceById = async (req: Request, res: Response) => {
     return res.status(200).json(ressource);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Impossible de récupérer la ressource" });
+    return res
+      .status(500)
+      .json({ error: "Impossible de récupérer la ressource" });
   }
 };
 

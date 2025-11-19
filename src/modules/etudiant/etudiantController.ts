@@ -8,44 +8,58 @@ import { getEtudiantsByGroupe, getEtudiantsByFiliere } from "./etudiantService";
 */
 export const createEtudiantController = async (req: Request, res: Response) => {
   try {
-    const { matricule, userId, groupeId, filiereId, dateInscription} = req.body;
-    const etudiant = await etudiantService.createEtudiant({matricule, userId, groupeId, filiereId, dateInscription});
+    const { matricule, userId, groupeId, filiereId, dateInscription } =
+      req.body;
+    const etudiant = await etudiantService.createEtudiant({
+      matricule,
+      userId,
+      groupeId,
+      filiereId,
+      dateInscription,
+    });
 
     res.status(201).json(etudiant);
   } catch (error) {
-    
     console.error("Erreur lors de la création de l'étudiant :", error);
-    res.status(500).json({ error: "Erreur lors de la création de l'étudiant." });
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la création de l'étudiant." });
   }
 };
 /* 
     Récupérer tous les étudiants
     Request Body: 
 */
-export const getAllEtudiantsController = async (_req: Request, res: Response) => {
-try {
-  const etudiants = await etudiantService.getAllEtudiants();
-  res.json(etudiants);
-} catch (error) {
-  console.error("Erreur lors de la récupération des étudiants :", error);
-  res.status(500).json({ error: "Erreur lors de la récupération des étudiants."  
-  });
-}
+export const getAllEtudiantsController = async (
+  _req: Request,
+  res: Response
+) => {
+  try {
+    const etudiants = await etudiantService.getAllEtudiants();
+    res.json(etudiants);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des étudiants :", error);
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération des étudiants." });
+  }
 };
 /* 
     Récupérer un étudiant par ID
     Request Body: {etudiantId: number}
 */
 export const getEtudiantController = async (req: Request, res: Response) => {
-  try { 
+  try {
     const id = Number(req.params.id);
     const etudiant = await etudiantService.getEtudiantById(id);
-    if (!etudiant) return res.status(404).json({ error: "Étudiant non trouvé." });
+    if (!etudiant)
+      return res.status(404).json({ error: "Étudiant non trouvé." });
     res.json(etudiant);
- }
-   catch (error) {
+  } catch (error) {
     console.error("Erreur lors de la récupération de l'étudiant :", error);
-    res.status(500).json({ error: "Erreur lors de la récupération de l'étudiant." });
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération de l'étudiant." });
   }
 };
 /* 
@@ -53,14 +67,15 @@ export const getEtudiantController = async (req: Request, res: Response) => {
     Request Body: { eventId: Int, titre: string, date DateTime, employeId Int }
 */
 export const updateEtudiantController = async (req: Request, res: Response) => {
-
   try {
     const id = Number(req.params.id);
     const updated = await etudiantService.updateEtudiant(id, req.body);
     res.json(updated);
   } catch (error) {
     console.error("Erreur lors de la mise à jour de l'étudiant :", error);
-    res.status(500).json({ error: "Erreur lors de la mise à jour de l'étudiant." });
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la mise à jour de l'étudiant." });
   }
 };
 
@@ -72,45 +87,70 @@ export const deleteEtudiantController = async (req: Request, res: Response) => {
     res.json({ message: "Étudiant supprimé.", etudiant: deleted });
   } catch (error) {
     console.error("Erreur lors de la suppression de l'étudiant :", error);
-    res.status(500).json({ error: "Erreur lors de la suppression de l'étudiant." });
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la suppression de l'étudiant." });
   }
 };
 
 // Étudiants d’une filière
-export const getEtudiantsByFiliereController = async (req: Request, res: Response) => {
-  try { 
-        const filiereId = Number(req.params.filiereId);
-          const etudiants = await etudiantService.getEtudiantsByFiliere(filiereId);
-          res.json(etudiants);
-  }catch (error) {
-        console.error("Erreur lors de la récupération des étudiants par filière :", error);
-        res.status(500).json({ error: "Erreur lors de la récupération des étudiants par filière." });
+export const getEtudiantsByFiliereController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const filiereId = Number(req.params.filiereId);
+    const etudiants = await etudiantService.getEtudiantsByFiliere(filiereId);
+    res.json(etudiants);
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des étudiants par filière :",
+      error
+    );
+    res.status(500).json({
+      error: "Erreur lors de la récupération des étudiants par filière.",
+    });
   }
 };
 
 // Étudiants d’un niveau
-export const getEtudiantsByNiveauController = async (req: Request, res: Response) => {
-   try {
-      const niveauId = Number(req.params.niveauId);
-      const etudiants = await etudiantService.getEtudiantsByNiveau(niveauId);
-      res.json(etudiants);
-    } 
-   catch (error) {
-        console.error("Erreur lors de la récupération des étudiants par niveau :", error);
-        res.status(500).json({ error: "Erreur lors de la récupération des étudiants par niveau." });
-   } 
+export const getEtudiantsByNiveauController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const niveauId = Number(req.params.niveauId);
+    const etudiants = await etudiantService.getEtudiantsByNiveau(niveauId);
+    res.json(etudiants);
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des étudiants par niveau :",
+      error
+    );
+    res.status(500).json({
+      error: "Erreur lors de la récupération des étudiants par niveau.",
+    });
+  }
 };
 
 // Étudiants d’un groupe
-export const getEtudiantsByGroupeController = async (req: Request, res: Response) => {
+export const getEtudiantsByGroupeController = async (
+  req: Request,
+  res: Response
+) => {
   try {
-  const groupeId = Number(req.params.groupeId);
-  const etudiants = await etudiantService.getEtudiantsByGroupe(groupeId);
-  res.json(etudiants);}
-    catch (error) {
-      console.error("Erreur lors de la récupération des étudiants par groupe :", error);
-      res.status(500).json({ error: "Erreur lors de la récupération des étudiants par groupe." });
-   }
+    const groupeId = Number(req.params.groupeId);
+    const etudiants = await etudiantService.getEtudiantsByGroupe(groupeId);
+    res.json(etudiants);
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des étudiants par groupe :",
+      error
+    );
+    res.status(500).json({
+      error: "Erreur lors de la récupération des étudiants par groupe.",
+    });
+  }
 };
 
 export const listEtudiantsByGroupe = async (req: Request, res: Response) => {
@@ -119,7 +159,10 @@ export const listEtudiantsByGroupe = async (req: Request, res: Response) => {
     const etudiants = await getEtudiantsByGroupe(idGroupe);
     res.json(etudiants);
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la récupération des étudiants par groupe", error });
+    res.status(500).json({
+      message: "Erreur lors de la récupération des étudiants par groupe",
+      error,
+    });
   }
 };
 
@@ -133,7 +176,9 @@ export const listEtudiantsByFiliere = async (req: Request, res: Response) => {
     const etudiants = await getEtudiantsByFiliere(idFiliere);
 
     if (etudiants.length === 0) {
-      return res.status(404).json({ message: "Aucun étudiant trouvé pour cette filière" });
+      return res
+        .status(404)
+        .json({ message: "Aucun étudiant trouvé pour cette filière" });
     }
 
     res.status(200).json(etudiants);
@@ -144,4 +189,3 @@ export const listEtudiantsByFiliere = async (req: Request, res: Response) => {
     });
   }
 };
-

@@ -1,10 +1,14 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import prisma from "../../config/prisma";
 import type { IEtudiant } from "./etudiantTypes";
 
-const prisma = new PrismaClient();
-
 // Créer un étudiant
-export const createEtudiant = async (etudiantParam: { matricule: string; userId: number; groupeId: number; filiereId: number ; dateInscription : Date}) => {
+export const createEtudiant = async (etudiantParam: {
+  matricule: string;
+  userId: number;
+  groupeId: number;
+  filiereId: number;
+  dateInscription: Date;
+}) => {
   try {
     const etudiantCree = await prisma.etudiant.create({
       data: etudiantParam,
@@ -15,7 +19,6 @@ export const createEtudiant = async (etudiantParam: { matricule: string; userId:
     throw error;
   }
 };
-
 
 // Récupérer un étudiant par ID avec relations
 export const getEtudiantById = async (id: number) => {
@@ -80,7 +83,6 @@ export const getEtudiantsByFiliere = async (idFiliere: number) => {
     },
   });
 };
-
 
 // Étudiants par niveau
 export const getEtudiantsByNiveau = async (niveauId: number) => {

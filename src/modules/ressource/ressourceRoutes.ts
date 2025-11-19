@@ -1,6 +1,5 @@
 import {Router} from "express";
 import multer from "multer";
-
 import * as ressourceController from "./ressourceController";
 const ressourceRoutes =Router();
 
