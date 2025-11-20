@@ -3,7 +3,11 @@ import * as userService from "./userService";
 import type { ExistingUser, NewUserWithId } from "./userTypes";
 import prisma from "../../config/prisma";
 import bcrypt from "bcrypt";
-import { hashPassword } from "../../utils/jwt";
+import { generateTokens, hashPassword } from "../../utils/jwt";
+import {
+  addRefreshTokenToWhitelist,
+  sendVerificationEmail,
+} from "../auth/authService";
 
 /* Get All Users */
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -116,12 +120,29 @@ export const createUser = async (req: Request, res: Response) => {
       roleId,
     });
 
+    const { accessToken, refreshToken } = generateTokens({
+      id: user.id,
+      role: { id: await user.role?.id, name: await user.role?.name },
+    });
+
+    // Send the Verification Email
+    await sendVerificationEmail(
+      process.env.NODEMAILER_AUTH_USER_EMAIL as string,
+      user.email,
+      refreshToken,
+      { email: user.email, password }
+    );
+
+    await addRefreshTokenToWhitelist({ refreshToken, userId: user.id });
+
     return res.status(201).json({
       success: true,
       data: user,
-      message: `User created successfully`,
+      message: `User created successfully, Please check your email!`,
     });
   } catch (error: any) {
+    console.log(error);
+
     return res.status(500).json({
       success: false,
       message: error?.message || "Internal Server Error While Creating User",

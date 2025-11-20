@@ -9,6 +9,7 @@ const authRoutes = Router();
     https://mihai-andrei.com/blog/jwt-authentication-using-prisma-and-express/
 */
 authRoutes.post("/register", createUser);
+authRoutes.get("/verify-email", authController.verifyEmail);
 authRoutes.post("/login", authController.loginUser);
 authRoutes.post("/refreshToken", authController.refreshToken);
 authRoutes.post("/revokeTokens", authController.revokeTokens);
