@@ -45,8 +45,8 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
 # Build-time argument
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+# ARG DATABASE_URL # UnComment_ON_DEPLOYMENT /!\
+# ENV DATABASE_URL=${DATABASE_URL} # UnComment_ON_DEPLOYMENT /!\
 
 # RUN MIGTATIONS INSIDE THE RUNTIME CONTAINER (Tables was not created before)
 # RUN npx prisma migrate deploy
