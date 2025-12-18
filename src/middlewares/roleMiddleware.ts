@@ -14,6 +14,8 @@ type RequestWithUser = Request & {
   };
 };
 
+// v1- Check 'role.name'
+// v2- Check 'permissions'
 export const roleMiddleware =
   (roles: string[]) =>
   (req: RequestWithUser, res: Response, next: NextFunction) => {

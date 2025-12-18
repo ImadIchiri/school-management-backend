@@ -1,17 +1,20 @@
 import type { Request, Response } from "express";
 import * as ressourceService from "./ressourceService";
-import { uploadToFirebase, deleteFromFirebase } from "../../config/firebaseStorage";
+import {
+  uploadToFirebase,
+  deleteFromFirebase,
+} from "../../config/firebaseStorage";
 import type { RessourceCreate, RessourceUpdate } from "./ressourceTypes";
 
 // Uploader une ressource et la créer dans Prisma
- 
+
 export const uploadRessource = async (req: Request, res: Response) => {
   try {
     const { titre, description, typeId, uploadedById } = req.body;
 
     if (!titre || !typeId || !uploadedById || !req.file) {
       return res.status(400).json({
-        error: "titre, typeId, uploadedById et fichier sont requis"
+        error: "titre, typeId, uploadedById et fichier sont requis",
       });
     }
 
@@ -42,7 +45,6 @@ export const uploadRessource = async (req: Request, res: Response) => {
 };
 
 // Récupérer toutes les ressources
- 
 export const getAllRessources = async (req: Request, res: Response) => {
   try {
     const ressources = await ressourceService.getAllRessources();
@@ -56,7 +58,6 @@ export const getAllRessources = async (req: Request, res: Response) => {
 };
 
 // Récupérer une ressource par son ID
- 
 export const getRessourceById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -82,7 +83,13 @@ export const updateRessource = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const { titre, description, url, typeId, uploadedById } = req.body;
 
-    const data: RessourceUpdate = { titre, description, url, typeId, uploadedById };
+    const data: RessourceUpdate = {
+      titre,
+      description,
+      url,
+      typeId,
+      uploadedById,
+    };
     const updated = await ressourceService.updateRessource(id, data);
 
     return res.status(200).json({

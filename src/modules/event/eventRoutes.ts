@@ -1,5 +1,6 @@
 import { Router } from "express";
 import * as eventController from "./eventController";
+// import { isAuthenticated } from "../../middlewares/authMiddleware";
 
 const eventRoutes = Router();
 

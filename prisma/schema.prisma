@@ -1,20 +1,397 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client"
   output        = "../src/generated/prisma"
-  // binaryTargets = ["native", "windows"]
-  // binaryTargets = ["native"]
   binaryTargets = ["native", "debian-openssl-3.0.x"]
+  engineType    = "binary"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  createdAt   DateTime         @default(now())
+  isDeleted   Boolean          @default(false)
+  updatedAt   DateTime         @updatedAt
+  deletedAt   DateTime?
+  permissions RolePermission[]
+  users       User[]
+}
+
+model Permission {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  createdAt   DateTime         @default(now())
+  isDeleted   Boolean          @default(false)
+  updatedAt   DateTime         @updatedAt
+  deletedAt   DateTime?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+  createdAt    DateTime   @default(now())
+  isDeleted    Boolean    @default(false)
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  role         Role       @relation(fields: [roleId], references: [id])
+}
+
+model RefreshToken {
+  id          String   @id @unique @default(uuid())
+  hashedToken String   @unique
+  userId      Int
+  revoked     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expireAt    DateTime
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  nom           String
+  prenom        String
+  dateNaissance DateTime
+  adresse       String
+  telephone     String
+  email         String         @unique
+  password      String
+  roleId        Int?
+  createdAt     DateTime       @default(now())
+  isDeleted     Boolean        @default(false)
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  candidat      Candidat?
+  employe       Employe?
+  etudiant      Etudiant?
+  parent        Parent?
+  refreshTokens RefreshToken[]
+  Ressource     Ressource[]
+  role          Role?          @relation(fields: [roleId], references: [id])
+}
+
+model Candidat {
+  idCandidature      Int             @id @default(autoincrement())
+  dateCandidature    DateTime
+  etat               EtatCandidature @default(en_attente)
+  userId             Int             @unique
+  etudiantIdEtudiant Int?
+  createdAt          DateTime        @default(now())
+  isDeleted          Boolean         @default(false)
+  updatedAt          DateTime        @updatedAt
+  deletedAt          DateTime?
+  filiere            String
+  niveau             NiveauCandidat
+  etudiant           Etudiant?       @relation(fields: [etudiantIdEtudiant], references: [idEtudiant])
+  user               User            @relation(fields: [userId], references: [id])
+}
+
+model Etudiant {
+  idEtudiant      Int              @id @default(autoincrement())
+  matricule       String           @unique
+  dateInscription DateTime
+  userId          Int              @unique
+  filiereId       Int
+  groupeId        Int
+  createdAt       DateTime         @default(now())
+  isDeleted       Boolean          @default(false)
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  absences        Absence[]
+  Candidat        Candidat[]
+  filiere         Filiere          @relation(fields: [filiereId], references: [id])
+  groupe          Groupe           @relation(fields: [groupeId], references: [id])
+  user            User             @relation(fields: [userId], references: [id])
+  examens         EtudiantExamen[]
+  events          Event[]          @relation("EtudiantToEvent")
+  opportunites    Opportunite[]    @relation("EtudiantToOpportunite")
+  parents         Parent[]         @relation("EtudiantToParent")
+}
+
+model Employe {
+  idEmploye    Int           @id @default(autoincrement())
+  poste        String
+  salaire      Float
+  userId       Int           @unique
+  createdAt    DateTime      @default(now())
+  isDeleted    Boolean       @default(false)
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+  user         User          @relation(fields: [userId], references: [id])
+  enseignant   Enseignant?
+  events       Event[]
+  opportunites Opportunite[]
+}
+
+model Enseignant {
+  idEnseignant       Int                @id @default(autoincrement())
+  specialite         String
+  employeId          Int                @unique
+  createdAt          DateTime           @default(now())
+  isDeleted          Boolean            @default(false)
+  updatedAt          DateTime           @updatedAt
+  deletedAt          DateTime?
+  Cours              Cours[]
+  employe            Employe            @relation(fields: [employeId], references: [idEmploye])
+  examens            Examen[]
+  moduleAffectations ModuleEnseignant[]
+  plannings          Planning[]
+  groupes            Groupe[]           @relation("EnseignantToGroupe")
+}
+
+model Parent {
+  idParent  Int        @id @default(autoincrement())
+  userId    Int        @unique
+  createdAt DateTime   @default(now())
+  isDeleted Boolean    @default(false)
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  user      User       @relation(fields: [userId], references: [id])
+  etudiants Etudiant[] @relation("EtudiantToParent")
+}
+
+model Filiere {
+  id          Int              @id @default(autoincrement())
+  nom         String           @unique
+  description String
+  createdAt   DateTime         @default(now())
+  isDeleted   Boolean          @default(false)
+  updatedAt   DateTime         @updatedAt
+  deletedAt   DateTime?
+  etudiants   Etudiant[]
+  niveaux     NiveauScolaire[]
+}
+
+model NiveauScolaire {
+  id         Int       @id @default(autoincrement())
+  anneeLabel String
+  dateDebut  DateTime
+  dateFin    DateTime
+  filiereId  Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  isDeleted  Boolean   @default(false)
+  deletedAt  DateTime?
+  groupes    Groupe[]
+  modules    Module[]
+  filiere    Filiere   @relation(fields: [filiereId], references: [id])
+}
+
+model Groupe {
+  id          Int            @id @default(autoincrement())
+  nom         String         @unique
+  niveauId    Int
+  createdAt   DateTime       @default(now())
+  isDeleted   Boolean        @default(false)
+  updatedAt   DateTime       @updatedAt
+  deletedAt   DateTime?
+  etudiants   Etudiant[]
+  niveau      NiveauScolaire @relation(fields: [niveauId], references: [id])
+  enseignants Enseignant[]   @relation("EnseignantToGroupe")
+}
+
+model Module {
+  id          Int                @id @default(autoincrement())
+  nom         String
+  description String
+  niveauId    Int
+  createdAt   DateTime           @default(now())
+  isDeleted   Boolean            @default(false)
+  updatedAt   DateTime           @updatedAt
+  deletedAt   DateTime?
+  cours       Cours[]
+  examens     Examen[]
+  niveau      NiveauScolaire     @relation(fields: [niveauId], references: [id])
+  enseignants ModuleEnseignant[]
+}
+
+model Cours {
+  id           Int              @id @default(autoincrement())
+  titre        String
+  description  String?
+  dateDebut    DateTime
+  dateFin      DateTime
+  duree        Int?
+  moduleId     Int
+  enseignantId Int?
+  salleId      Int?
+  createdAt    DateTime         @default(now())
+  isDeleted    Boolean          @default(false)
+  updatedAt    DateTime         @updatedAt
+  deletedAt    DateTime?
+  absences     Absence[]
+  enseignant   Enseignant?      @relation(fields: [enseignantId], references: [idEnseignant])
+  module       Module           @relation(fields: [moduleId], references: [id])
+  salle        Salle?           @relation(fields: [salleId], references: [id])
+  ressources   CoursRessource[]
+  plannings    Planning[]
+}
+
+model TypeRessource {
+  id         Int         @id @default(autoincrement())
+  nom        String      @unique
+  createdAt  DateTime    @default(now())
+  isDeleted  Boolean     @default(false)
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?
+  ressources Ressource[]
+}
+
+model Ressource {
+  id           Int              @id @default(autoincrement())
+  titre        String
+  description  String?
+  url          String
+  uploadedAt   DateTime         @default(now())
+  uploadedById Int
+  typeId       Int
+  isDeleted    Boolean          @default(false)
+  updatedAt    DateTime         @updatedAt
+  deletedAt    DateTime?
+  coursLink    CoursRessource[]
+  type         TypeRessource    @relation(fields: [typeId], references: [id])
+  uploadedBy   User             @relation(fields: [uploadedById], references: [id])
+}
+
+model CoursRessource {
+  id          Int       @id @default(autoincrement())
+  coursId     Int
+  ressourceId Int
+  createdAt   DateTime  @default(now())
+  isDeleted   Boolean   @default(false)
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  cours       Cours     @relation(fields: [coursId], references: [id])
+  ressource   Ressource @relation(fields: [ressourceId], references: [id])
+}
+
+model Examen {
+  id           Int              @id @default(autoincrement())
+  titre        String
+  type         String
+  coeff        Float            @default(1)
+  dateDebut    DateTime
+  dateFin      DateTime
+  dureeMinutes Int?
+  moduleId     Int
+  enseignantId Int
+  salleId      Int?
+  createdAt    DateTime         @default(now())
+  isDeleted    Boolean          @default(false)
+  updatedAt    DateTime         @updatedAt
+  deletedAt    DateTime?
+  etudiants    EtudiantExamen[]
+  enseignant   Enseignant       @relation(fields: [enseignantId], references: [idEnseignant])
+  module       Module           @relation(fields: [moduleId], references: [id])
+  salle        Salle?           @relation(fields: [salleId], references: [id])
+}
+
+model Absence {
+  id         Int            @id @default(autoincrement())
+  date       DateTime
+  motif      String?
+  statut     StatutPresence @default(PRESENT)
+  etudiantId Int
+  coursId    Int
+  createdAt  DateTime       @default(now())
+  isDeleted  Boolean        @default(false)
+  updatedAt  DateTime       @updatedAt
+  deletedAt  DateTime?
+  cours      Cours          @relation(fields: [coursId], references: [id])
+  etudiant   Etudiant       @relation(fields: [etudiantId], references: [idEtudiant])
+}
+
+model Salle {
+  id        Int        @id @default(autoincrement())
+  nom       String     @unique
+  capacite  Int
+  createdAt DateTime   @default(now())
+  isDeleted Boolean    @default(false)
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  Cours     Cours[]
+  Examen    Examen[]
+  plannings Planning[]
+}
+
+model Planning {
+  id           Int        @id @default(autoincrement())
+  dateDebut    DateTime
+  dateFin      DateTime
+  description  String
+  coursId      Int
+  enseignantId Int
+  salleId      Int
+  createdAt    DateTime   @default(now())
+  isDeleted    Boolean    @default(false)
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  cours        Cours      @relation(fields: [coursId], references: [id])
+  enseignant   Enseignant @relation(fields: [enseignantId], references: [idEnseignant])
+  salle        Salle      @relation(fields: [salleId], references: [id])
+}
+
+model Event {
+  id        Int        @id @default(autoincrement())
+  titre     String
+  date      DateTime
+  employeId Int
+  createdAt DateTime   @default(now())
+  isDeleted Boolean    @default(false)
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  employe   Employe    @relation(fields: [employeId], references: [idEmploye])
+  etudiants Etudiant[] @relation("EtudiantToEvent")
+}
+
+model Opportunite {
+  id        Int        @id @default(autoincrement())
+  titre     String
+  type      String
+  employeId Int
+  createdAt DateTime   @default(now())
+  isDeleted Boolean    @default(false)
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  employe   Employe    @relation(fields: [employeId], references: [idEmploye])
+  etudiants Etudiant[] @relation("EtudiantToOpportunite")
+}
+
+model ModuleEnseignant {
+  id              Int        @id @default(autoincrement())
+  dateAffectation DateTime
+  enseignantId    Int
+  moduleId        Int
+  createdAt       DateTime   @default(now())
+  isDeleted       Boolean    @default(false)
+  updatedAt       DateTime   @updatedAt
+  deletedAt       DateTime?
+  enseignant      Enseignant @relation(fields: [enseignantId], references: [idEnseignant])
+  module          Module     @relation(fields: [moduleId], references: [id])
+}
+
+model EtudiantExamen {
+  id             Int       @id @default(autoincrement())
+  present        Boolean
+  note           Float
+  mention        String
+  dateEvaluation DateTime
+  etudiantId     Int
+  examenId       Int
+  createdAt      DateTime  @default(now())
+  isDeleted      Boolean   @default(false)
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+  etudiant       Etudiant  @relation(fields: [etudiantId], references: [idEtudiant])
+  examen         Examen    @relation(fields: [examenId], references: [id])
 }
 
 enum EtatCandidature {
@@ -39,474 +416,4 @@ enum NiveauCandidat {
   MASTER_1
   MASTER_2
   MASTER_3
-}
-
-model Role {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
-  description String?
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  // Relations
-  users       User[]
-  permissions RolePermission[]
-}
-
-model Permission {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
-  description String?
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  roles RolePermission[]
-}
-
-model RolePermission {
-  id           Int @id @default(autoincrement())
-  roleId       Int
-  permissionId Int
-
-  role       Role       @relation(fields: [roleId], references: [id])
-  permission Permission @relation(fields: [permissionId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-}
-
-model RefreshToken {
-  id          String   @id @unique @default(uuid())
-  hashedToken String   @unique
-  userId      Int
-  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  revoked     Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  expireAt    DateTime
-}
-
-model User {
-  id            Int      @id @default(autoincrement())
-  nom           String
-  prenom        String
-  dateNaissance DateTime
-  adresse       String
-  telephone     String
-  email         String   @unique
-  password      String
-
-  roleId Int?
-  role   Role? @relation(fields: [roleId], references: [id])
-
-  // Relations
-  candidat Candidat?
-  etudiant Etudiant?
-  employe  Employe?
-  parent   Parent?
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  refreshTokens RefreshToken[]
-
-  Ressource Ressource[]
-}
-
-model Candidat {
-  idCandidature   Int             @id @default(autoincrement())
-  dateCandidature DateTime
-  etat            EtatCandidature @default(en_attente)
-
-  filiere String
-  niveau  NiveauCandidat
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  // Relations
-  userId             Int       @unique
-  user               User      @relation(fields: [userId], references: [id])
-  etudiant           Etudiant? @relation(fields: [etudiantIdEtudiant], references: [idEtudiant])
-  etudiantIdEtudiant Int?
-}
-
-model Etudiant {
-  idEtudiant      Int      @id @default(autoincrement())
-  matricule       String   @unique
-  dateInscription DateTime
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  // Relations
-  userId Int  @unique
-  user   User @relation(fields: [userId], references: [id])
-
-  filiereId Int
-  filiere   Filiere @relation(fields: [filiereId], references: [id])
-
-  groupeId Int
-  groupe   Groupe @relation(fields: [groupeId], references: [id])
-
-  absences     Absence[]
-  examens      EtudiantExamen[]
-  parents      Parent[]
-  events       Event[]
-  opportunites Opportunite[]
-  Candidat     Candidat[]
-}
-
-model Employe {
-  idEmploye Int    @id @default(autoincrement())
-  poste     String
-  salaire   Float
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  // Relations
-  userId Int  @unique
-  user   User @relation(fields: [userId], references: [id])
-
-  enseignant   Enseignant?
-  events       Event[]
-  opportunites Opportunite[]
-}
-
-model Enseignant {
-  idEnseignant Int    @id @default(autoincrement())
-  specialite   String
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  employeId Int     @unique
-  employe   Employe @relation(fields: [employeId], references: [idEmploye])
-
-  moduleAffectations ModuleEnseignant[]
-  groupes            Groupe[]
-  plannings          Planning[]
-  examens            Examen[]
-  Cours              Cours[]
-}
-
-model Parent {
-  idParent Int @id @default(autoincrement())
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  userId Int  @unique
-  user   User @relation(fields: [userId], references: [id])
-
-  etudiants Etudiant[]
-}
-
-model Filiere {
-  id          Int    @id @default(autoincrement())
-  nom         String @unique
-  description String
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  niveaux   NiveauScolaire[]
-  etudiants Etudiant[]
-}
-
-model NiveauScolaire {
-  id         Int      @id @default(autoincrement())
-  anneeLabel String // Exemple : "2025-2026"
-  dateDebut  DateTime //  Exemple : "15-10-2025"
-  dateFin    DateTime //  Exemple : "15-07-2026"
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  filiereId Int
-  filiere   Filiere @relation(fields: [filiereId], references: [id])
-
-  modules Module[]
-  groupes Groupe[]
-}
-
-model Groupe {
-  id  Int    @id @default(autoincrement())
-  nom String @unique
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  niveauId Int
-  niveau   NiveauScolaire @relation(fields: [niveauId], references: [id])
-
-  etudiants   Etudiant[]
-  enseignants Enseignant[]
-}
-
-model Module {
-  id          Int    @id @default(autoincrement())
-  nom         String
-  description String
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  niveauId Int
-  niveau   NiveauScolaire @relation(fields: [niveauId], references: [id])
-
-  cours       Cours[]
-  examens     Examen[]
-  enseignants ModuleEnseignant[]
-}
-
-model Cours {
-  id          Int      @id @default(autoincrement())
-  titre       String
-  description String?
-  dateDebut   DateTime // ex: "2025-11-01T08:00:00Z"
-  dateFin     DateTime // ex: "2025-11-01T10:00:00Z"
-  duree       Int? // optionnel, peut être calculé à partir de la différence entre dateFin et dateDebut
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  moduleId Int
-  module   Module @relation(fields: [moduleId], references: [id])
-
-  enseignantId Int?
-  enseignant   Enseignant? @relation(fields: [enseignantId], references: [idEnseignant])
-
-  salleId Int?
-  salle   Salle? @relation(fields: [salleId], references: [id])
-
-  plannings  Planning[]
-  ressources CoursRessource[]
-  absences   Absence[]
-}
-
-model TypeRessource {
-  id  Int    @id @default(autoincrement())
-  nom String @unique
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  ressources Ressource[]
-}
-
-model Ressource {
-  id          Int      @id @default(autoincrement())
-  titre       String
-  description String?
-  url         String // lien Firebase Storage
-  uploadedAt  DateTime @default(now())
-
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  uploadedById Int
-  uploadedBy   User? @relation(fields: [uploadedById], references: [id])
-
-  typeId Int
-  type   TypeRessource @relation(fields: [typeId], references: [id])
-
-  coursLink CoursRessource[]
-}
-
-model CoursRessource {
-  id Int @id @default(autoincrement())
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  coursId Int
-  cours   Cours @relation(fields: [coursId], references: [id])
-
-  ressourceId Int
-  ressource   Ressource @relation(fields: [ressourceId], references: [id])
-}
-
-model Examen {
-  id    Int    @id @default(autoincrement())
-  titre String
-  type  String // "Initial", "Rattrapage", ...
-  coeff Float  @default(1)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  dateDebut    DateTime // ex: 2025-06-10T08:00:00Z
-  dateFin      DateTime // ex: 2025-06-10T10:00:00Z
-  dureeMinutes Int?
-
-  moduleId Int
-  module   Module @relation(fields: [moduleId], references: [id])
-
-  enseignantId Int
-  enseignant   Enseignant @relation(fields: [enseignantId], references: [idEnseignant])
-
-  salleId Int?
-  salle   Salle? @relation(fields: [salleId], references: [id])
-
-  etudiants EtudiantExamen[]
-}
-
-model Absence {
-  id     Int            @id @default(autoincrement())
-  date   DateTime
-  motif  String?
-  statut StatutPresence @default(PRESENT)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  etudiantId Int
-  etudiant   Etudiant @relation(fields: [etudiantId], references: [idEtudiant])
-
-  coursId Int
-  cours   Cours @relation(fields: [coursId], references: [id])
-}
-
-model Salle {
-  id       Int    @id @default(autoincrement())
-  nom      String @unique
-  capacite Int
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  plannings Planning[]
-  Cours     Cours[]
-  Examen    Examen[]
-}
-
-model Planning {
-  id          Int      @id @default(autoincrement())
-  dateDebut   DateTime
-  dateFin     DateTime
-  description String
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  coursId Int
-  cours   Cours @relation(fields: [coursId], references: [id])
-
-  enseignantId Int
-  enseignant   Enseignant @relation(fields: [enseignantId], references: [idEnseignant])
-
-  salleId Int
-  salle   Salle @relation(fields: [salleId], references: [id])
-}
-
-model Event {
-  id    Int      @id @default(autoincrement())
-  titre String
-  date  DateTime
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  employeId Int
-  employe   Employe @relation(fields: [employeId], references: [idEmploye])
-
-  etudiants Etudiant[]
-}
-
-model Opportunite {
-  id    Int    @id @default(autoincrement())
-  titre String
-  type  String
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  employeId Int
-  employe   Employe @relation(fields: [employeId], references: [idEmploye])
-
-  etudiants Etudiant[]
-}
-
-model ModuleEnseignant {
-  id              Int      @id @default(autoincrement())
-  dateAffectation DateTime
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  enseignantId Int
-  enseignant   Enseignant @relation(fields: [enseignantId], references: [idEnseignant])
-
-  moduleId Int
-  module   Module @relation(fields: [moduleId], references: [id])
-}
-
-model EtudiantExamen {
-  id             Int      @id @default(autoincrement())
-  present        Boolean
-  note           Float
-  mention        String
-  dateEvaluation DateTime
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-
-  etudiantId Int
-  etudiant   Etudiant @relation(fields: [etudiantId], references: [idEtudiant])
-
-  examenId Int
-  examen   Examen @relation(fields: [examenId], references: [id])
 }

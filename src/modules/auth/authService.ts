@@ -1,5 +1,7 @@
+import "dotenv/config";
 import prisma from "../../config/prisma";
 import { hashToken } from "../../utils/hashToken";
+import nodemailer from "nodemailer";
 
 // used when we create a refresh token.
 // a refresh token is valid for 30 days
@@ -51,3 +53,75 @@ export const revokeTokens = (userId: number) => {
     },
   });
 };
+
+const emailTransporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.NODEMAILER_AUTH_USER_EMAIL,
+    pass: process.env.NODEMAILER_AUTH_PASSWORD, // crated in 'Application Passwords section on Google_Account'
+  },
+});
+
+export const sendVerificationEmail = async (
+  sender: string,
+  recipient: string,
+  refreshToken: string,
+  credentials: { email: string; password: string }
+) => {
+  // Define Mail Options
+  const mailOptions = {
+    from: sender,
+    to: recipient,
+    // subject: "Verify Your Email - YNOV SchoolManagemnt",
+    subject: "Your Credentials - YNOV SchoolManagemnt",
+    html: `
+    <div style="
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+      font-size: 18px;
+      color: #333;
+    ">
+    
+    <h3 style="margin-bottom: 20px;">Your Login Credentials</h3>
+
+    <div style="
+      margin: 10px auto;
+      padding: 12px 20px;
+      border-radius: 6px;
+      background: #059023;
+      color: #fff;
+      font-weight: bold;
+      width: max-content;
+    ">
+      Email: ${credentials.email.replace("@", "&#8203;@")}
+    </div>
+
+    <div style="
+      margin: 10px auto;
+      padding: 12px 20px;
+      border-radius: 6px;
+      background: #059023;
+      color: #fff;
+      font-weight: bold;
+      width: max-content;
+    ">
+      Password: ${credentials.password}
+    </div>
+
+    <p style="margin-top: 25px; font-size: 15px; color: #666;">
+      Please keep this information secure.
+    </p>
+</div>`,
+  };
+
+  // Send Mail with the transporter
+  await emailTransporter.sendMail(mailOptions);
+};
+
+export const emailVerificationUrl = (refreshToken: string): string =>
+  `http://localhost:${
+    process.env.PORT || 8080
+  }/api/v1/verify-email?token=${refreshToken}`;

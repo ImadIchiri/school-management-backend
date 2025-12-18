@@ -1,4 +1,5 @@
 import prisma from "../../config/prisma";
+import { UserWhereUniqueInput } from "../../generated/prisma/models";
 import type { ExistingUser, NewUser, NewUserWithId } from "./userTypes";
 
 export const getAllUsers = () => {
@@ -71,6 +72,6 @@ export const deleteUser = async (user: ExistingUser): Promise<ExistingUser> => {
   });
 };
 
-export const getUserByEmail = (email: any): Promise<ExistingUser | null> => {
-  return prisma.user.findUnique({ where: email });
+export const getUserByEmail = (email: string): Promise<ExistingUser | null> => {
+  return prisma.user.findUnique({ where: { email }, include: { role: true } });
 };

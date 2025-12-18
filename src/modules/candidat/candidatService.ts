@@ -1,7 +1,5 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import prisma from "../../config/prisma";
 import type { ExistingCandidat, NewCandidat } from "./candidatTypes";
-
-const prisma = new PrismaClient();
 
 export const getAllCandidats = async () => {
   return await prisma.candidat.findMany({
