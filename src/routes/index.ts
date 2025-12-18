@@ -18,7 +18,7 @@ import employeRoutes from "../modules/employe/employeRoutes";
 
 import enseignantRoutes from "../modules/enseignant/enseignantRoutes";
 
-import etudiantRoutes from "../modules/etudiant/etudiantRoutes";
+import etudiantRoutes from "../modules/etudiant/etudiantRoute";
 
 import parentRoutes from "../modules/parent/parentRoutes";
 
