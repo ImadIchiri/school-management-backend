@@ -1,7 +1,5 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import prisma from "../../config/prisma";
 import type { ExistingCandidat, NewCandidat } from "./candidatTypes";
-
-const prisma = new PrismaClient();
 
 export const getAllCandidats = async () => {
   return await prisma.candidat.findMany({
@@ -15,7 +13,9 @@ export const getCandidatById = async (id: number) => {
   });
 };
 
-export const createCandidat = async (data: NewCandidat) => {
+export const createCandidat = async (
+  data: NewCandidat
+): Promise<ExistingCandidat> => {
   return await prisma.candidat.create({
     data: {
       ...data,

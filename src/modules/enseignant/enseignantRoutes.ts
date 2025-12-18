@@ -9,10 +9,10 @@ import {
 
 const router = Router();
 
-router.post("/", createEnseignantController);
-router.get("/", getAllEnseignantsController);
-router.get("/:id", getEnseignantController);
-router.put("/:id", updateEnseignantController);
-router.delete("/:id", deleteEnseignantController);
+router.get("/enseignants", getAllEnseignantsController);
+router.get("/enseignants/:id", getEnseignantController);
+router.post("/enseignants", createEnseignantController);
+router.put("/enseignants/:id", updateEnseignantController);
+router.delete("/enseignants", deleteEnseignantController);
 
 export default router;

@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import * as authService from "./authService";
 import * as userService from "../user/userService";
 import { generateTokens, hashPassword } from "../../utils/jwt";
+import prisma from "../../config/prisma";
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
@@ -19,7 +20,7 @@ export const loginUser = async (req: Request, res: Response) => {
       });
     }
 
-    const existingUser = await userService.getUserByEmail(email);
+    const existingUser = await userService.getUserByEmail(email as string);
 
     if (!existingUser) {
       return res
@@ -37,9 +38,11 @@ export const loginUser = async (req: Request, res: Response) => {
         .json({ success: false, message: "Invalid login credentials." });
     }
 
+    // console.log({ existingUser });
+
     const { accessToken, refreshToken } = generateTokens({
       id: existingUser.id,
-      role: { id: existingUser.role.id, name: existingUser.role.name },
+      role: { id: existingUser.role?.id, name: existingUser?.role?.name },
     });
     await authService.addRefreshTokenToWhitelist({
       refreshToken,
@@ -52,10 +55,54 @@ export const loginUser = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (err: any) {
+    console.log(err);
+
     return res.status(500).json({
       success: false,
       message: err.message || "Internal server error while Login",
     });
+  }
+};
+
+// A request will come to "http://localhost:8080/verify-email?token="
+// I will check if the token is valid
+// If Valid ==> edit the isValid attribute in the User table to be true
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.query; // verify-email?token=...
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "No token found!",
+      });
+    }
+
+    // Find the 'refreshToken' which has the 'userId'
+    const refreshToken = await authService.findRefreshToken(token as string);
+
+    if (!refreshToken)
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid Or Outdated Refresh Token" });
+
+    // Update the user based on 'userId'
+    // const updatedUser = await prisma.user.update({
+    //   where: { id: refreshToken.userId },
+    //   data: { isValid: true },
+    // });
+
+    // if (!updatedUser)
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "No User found with this token." });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Your account is activated now." });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error while verifying email", error });
   }
 };
 
@@ -150,7 +197,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
       service: process.env.NODEMAILER_SERVICE,
       auth: {
         user: process.env.NODEMAILER_AUTH_USER_EMAIL,
-        pass: process.env.NODEMAILER_AUTH_PASSWORD_EMAIL,
+        pass: process.env.NODEMAILER_AUTH_PASSWORD,
       },
     });
 

@@ -1,7 +1,6 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import prisma from "../../config/prisma";
 import type { IEmploye } from "./employeTypes";
 
-const prisma = new PrismaClient();
 
 export const createEmploye = async (employe: IEmploye) => {
   return prisma.employe.create({ data: employe });

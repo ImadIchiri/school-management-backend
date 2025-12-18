@@ -9,10 +9,10 @@ import {
 
 const router = Router();
 
-router.post("/", createEmployeController);
-router.get("/", getAllEmployesController);
-router.get("/:id", getEmployeByIdController);
-router.put("/:id", updateEmployeController);
-router.delete("/:id", deleteEmployeController);
+router.get("/employes", getAllEmployesController);
+router.get("/employes/:id", getEmployeByIdController);
+router.post("/employes", createEmployeController);
+router.put("/employes/:id", updateEmployeController);
+router.delete("/employes", deleteEmployeController);
 
 export default router;

@@ -10,9 +10,9 @@ import {
 const candidatRoutes = Router();
 
 candidatRoutes.get("/candidats", getAllCandidatsController);
-candidatRoutes.get("/candidats/:candidatId", getCandidatByIdController);
+candidatRoutes.get("/candidats/:id", getCandidatByIdController);
 candidatRoutes.post("/candidats", createCandidatController);
-candidatRoutes.put("/candidats/:candidatId", updateCandidatController);
-candidatRoutes.put("/candidats/:candidatId", deleteCandidatController);
+candidatRoutes.put("/candidats/:id", updateCandidatController);
+candidatRoutes.delete("/candidats", deleteCandidatController);
 
 export default candidatRoutes;
