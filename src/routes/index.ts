@@ -18,7 +18,7 @@ import employeRoutes from "../modules/employe/employeRoutes";
 
 import enseignantRoutes from "../modules/enseignant/enseignantRoutes";
 
-import etudiantRoutes from "../modules/etudiant/etudiantRoute";
+import etudiantRoutes from "../modules/etudiant/etudiantRoutes";
 
 import parentRoutes from "../modules/parent/parentRoutes";
 
@@ -37,8 +37,6 @@ import filiereRoutes from "../modules/filiere/filiereRoutes";
 import groupeRoutes from "../modules/groupe/groupeRoutes";
 // Import niveaux Routes
 import niveauRoutes from "../modules/niveau/niveauRoutes";
-// Import etudiant Routes
-import etudiantRoute from "../modules/etudiant/etudiantRoute";
 
 import moduleRoutes from "../modules/module/moduleRoutes";
 import coursRoutes from "../modules/cours/coursRoutes";
@@ -64,7 +62,6 @@ export {
   filiereRoutes,
   groupeRoutes,
   niveauRoutes,
-  etudiantRoute,
   moduleRoutes,
   coursRoutes,
   ressourceRoutes,

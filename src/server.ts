@@ -60,8 +60,6 @@ app.use("/api/v1", allRoutes.filiereRoutes);
 app.use("/api/v1", allRoutes.groupeRoutes);
 // Use niveau Routes
 app.use("/api/v1", allRoutes.niveauRoutes);
-// Use etudiant Routes
-app.use("/api/v1", allRoutes.etudiantRoute);
 
 app.use("/api/v1", allRoutes.moduleRoutes);
 app.use("/api/v1", allRoutes.coursRoutes);
