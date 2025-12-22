@@ -1,10 +1,23 @@
 import express from "express";
+import cors from "cors";
 import * as allRoutes from "./routes/index";
 
 import "dotenv/config";
+import corsConfig from "./config/cors";
 
 const PORT = process.env.PORT || 8088;
 const app = express();
+
+// Setup CORS
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// app.options("*", cors());
 
 // For Express To Know We Are Using JSON
 app.use(express.json());
@@ -46,6 +59,7 @@ app.use("/api/v1", allRoutes.etudiantRoutes);
 
 // Use Parent Routes
 app.use("/api/v1", allRoutes.parentRoutes);
+
 // Use Planning Routes
 app.use("/api/v1", allRoutes.planningRoutes);
 
@@ -54,17 +68,23 @@ app.use("/api/v1/absence", allRoutes.absenceRoutes);
 
 // Use Examen Routes
 app.use("/api/v1/examen", allRoutes.examenRoutes);
+
 // Use Filiere Routes
 app.use("/api/v1", allRoutes.filiereRoutes);
+
 // Use groupe Routes
 app.use("/api/v1", allRoutes.groupeRoutes);
+
 // Use niveau Routes
 app.use("/api/v1", allRoutes.niveauRoutes);
+
 // Use etudiant Routes
 app.use("/api/v1", allRoutes.etudiantRoute);
 
 app.use("/api/v1", allRoutes.moduleRoutes);
+
 app.use("/api/v1", allRoutes.coursRoutes);
+
 // Use Ressource Routes
 app.use("/api/v1", allRoutes.ressourceRoutes);
 

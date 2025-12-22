@@ -9,3 +9,5 @@ postgres_data/
 dist/
 
 firebase-service-account.json
+
+.vscode/
