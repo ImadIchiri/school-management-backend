@@ -54,15 +54,34 @@ import * as FiliereService from "./filiereService";
   }
 
   // Supprimer une filière
-   export const deletefiliere = async(req: Request, res: Response) => {
-    try {
-      const id = Number(req.params.id);
-      const deleted = await FiliereService.deleteFiliere(id);
-      res.status(200).json({ message: "Filière supprimée", deleted });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message || "Erreur interne" });
+   export const deletefiliere = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    // 1️⃣ Vérifier si la filière contient des étudiants
+    const etudiants = await FiliereService.getEtudiantsByFiliere(id);
+
+    if (etudiants.length > 0) {
+      return res.status(400).json({
+        message: "Impossible de supprimer : la filière est pleine (contient des étudiants)",
+      });
     }
+
+    // 2️⃣ Supprimer si vide
+    const deleted = await FiliereService.deleteFiliere(id);
+
+    res.status(200).json({
+      message: "Filière supprimée avec succès",
+      deleted,
+    });
+
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message || "Erreur interne",
+    });
   }
+}
+
 
   //Lister les étudiants d’une filière
    export const getEtudiantsByFiliere = async(req: Request, res: Response) => {

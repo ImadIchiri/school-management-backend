@@ -43,14 +43,33 @@ import * as GroupService from "./groupeService";
   }
 
   export const deleteGroupe = async (req: Request, res: Response)=> {
-    try {
-      const id = Number(req.params.id);
-      const deleted = await GroupService.deleteGroupe(id);
-      res.status(200).json({ message: "Groupe supprimé", deleted });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message || "Erreur interne" });
+  try {
+    const id = Number(req.params.id);
+
+    // 1️⃣ Vérifier si le groupe contient des étudiants
+    const etudiants = await GroupService.getEtudiantsByGroupe(id);
+
+    if (etudiants.length > 0) {
+      return res.status(400).json({
+        message: "Impossible de supprimer : le groupe est plein (contient des étudiants)",
+      });
     }
+
+    // 2️⃣ Supprimer si vide
+    const deleted = await GroupService.deleteGroupe(id);
+
+    res.status(200).json({
+      message: "Groupe supprimé avec succès",
+      deleted,
+    });
+
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message || "Erreur interne",
+    });
   }
+}
+
 
   export const getEtudiants =async (req: Request, res: Response)=> {
     try {

@@ -42,14 +42,33 @@ export const  getAllNiveaux = async(req: Request, res: Response) =>{
   }
 
   export const deleteNiveau = async (req: Request, res: Response)=> {
-    try {
-      const id = Number(req.params.id);
-      const deleted = await NiveauService.deleteNiveau(id);
-      res.status(200).json({ message: "Niveau supprimé", deleted });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message || "Erreur interne" });
+  try {
+    const id = Number(req.params.id);
+
+    // Vérifier si le niveau contient des groupes
+    const groupes = await NiveauService.getGroupesByNiveau(id);
+
+    if (groupes.length > 0) {
+      return res.status(400).json({
+        message: "Impossible de supprimer : le niveau est plein (contient des groupes)",
+      });
     }
+
+    // Supprimer si vide
+    const deleted = await NiveauService.deleteNiveau(id);
+
+    res.status(200).json({
+      message: "Niveau supprimé avec succès",
+      deleted,
+    });
+
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message || "Erreur interne",
+    });
   }
+}
+
 
   export const  getGroupes = async(req: Request, res: Response)=> {
     try {
