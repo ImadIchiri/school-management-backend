@@ -1,12 +1,8 @@
 import type { Request, Response } from "express";
 import * as candidatService from "./candidatService";
-import { NewCandidat } from "./candidatTypes";
 
 /* Get All Candidats */
-export const getAllCandidatsController = async (
-  req: Request,
-  res: Response
-) => {
+export const getAllCandidatsController = async (req: Request, res: Response) => {
   try {
     const candidats = await candidatService.getAllCandidats();
     return res.status(200).json({
@@ -17,18 +13,14 @@ export const getAllCandidatsController = async (
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      message:
-        error?.message || "Erreur lors de la récupération des candidats.",
-      error: error,
+      message: error?.message || "Erreur lors de la récupération des candidats.",
+      error,
     });
   }
 };
 
 /* Get Candidat By Id */
-export const getCandidatByIdController = async (
-  req: Request,
-  res: Response
-) => {
+export const getCandidatByIdController = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
     const candidat = await candidatService.getCandidatById(id);
@@ -48,43 +40,57 @@ export const getCandidatByIdController = async (
     return res.status(500).json({
       success: false,
       message: error?.message || "Erreur lors de la récupération du candidat.",
-      error: error,
+      error,
     });
   }
 };
 
-/* Create Candidat */
+/* Create Candidat + User */
 export const createCandidatController = async (req: Request, res: Response) => {
   try {
-    const { userId, filiere, niveau, etat } = req.body;
+    const {
+      nom,
+      prenom,
+      dateNaissance,
+      adresse,
+      telephone,
+      email,
+      password,
+      filiere,
+      niveau,
+    } = req.body;
 
-    if (!userId || !filiere || !niveau) {
+    // Validation minimale
+    if (!nom || !prenom || !dateNaissance || !adresse || !telephone || !email || !password || !filiere || !niveau) {
       return res.status(400).json({
         success: false,
-        message: "userId, filiere et niveau sont obligatoires.",
+        message: "Tous les champs sont obligatoires.",
       });
     }
 
-    const newCandidat: NewCandidat = {
-      userId,
+    // Création User + Candidat
+    const candidat = await candidatService.createUserAndCandidat({
+      nom,
+      prenom,
+      dateNaissance,
+      adresse,
+      telephone,
+      email,
+      password,
       filiere,
       niveau,
-      etat: etat || "en_attente", // valeur par défaut si non fourni
-      dateCandidature: new Date(), // date actuelle
-    };
-
-    const createdCandidat = await candidatService.createCandidat(newCandidat);
+    });
 
     return res.status(201).json({
       success: true,
-      data: createdCandidat,
-      message: "Candidat créé avec succès",
+      message: "Candidature créée avec succès.",
+      data: candidat,
     });
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      message: error?.message || "Erreur lors de la création du candidat.",
-      error: error,
+      message: error?.message || "Erreur lors de la création de la candidature.",
+      error,
     });
   }
 };
@@ -93,7 +99,15 @@ export const createCandidatController = async (req: Request, res: Response) => {
 export const updateCandidatController = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const updatedCandidat = await candidatService.updateCandidat(id, req.body);
+    const { etat } = req.body;
+
+    // Vérifier que l'état est valide selon le schema Prisma
+    const validEtats = ["en_attente", "en_cours", "accepte", "refuse", "incomplet"];
+    if (!validEtats.includes(etat)) {
+      return res.status(400).json({ success: false, message: "Valeur d'état invalide." });
+    }
+
+    const updatedCandidat = await candidatService.updateCandidat(id, { etat });
 
     return res.status(200).json({
       success: true,
@@ -104,10 +118,12 @@ export const updateCandidatController = async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       message: error?.message || "Erreur lors de la mise à jour du candidat.",
-      error: error,
+      error,
     });
   }
 };
+
+
 
 /* Delete Candidat */
 export const deleteCandidatController = async (req: Request, res: Response) => {
@@ -140,8 +156,7 @@ export const deleteCandidatController = async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       message: error?.message || "Erreur suppression candidat.",
-      error: error,
+      error,
     });
   }
 };
-
