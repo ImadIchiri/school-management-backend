@@ -15,6 +15,12 @@ roleRoutes.post("/roles", roleController.createRole);
 // Update Role
 roleRoutes.put("/roles/:roleId", roleController.updateRole);
 
+// Assign Permissions
+roleRoutes.put(
+  "/roles/:roleId/permissions",
+  roleController.assignPermissionsToRole
+);
+
 // Delete Role
 roleRoutes.delete("/roles/:roleId", roleController.deleteRole);
 

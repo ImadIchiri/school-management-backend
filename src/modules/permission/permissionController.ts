@@ -144,7 +144,6 @@ export const updatePermission = async (req: Request, res: Response) => {
       date: updatedPermission,
     });
   } catch (error: any) {
-    console.log(`Error While Updating Permission ${error}`);
     return res.status(500).json({
       success: false,
       message: `Error While Updating Permission`,

@@ -7,6 +7,9 @@ export const getAllRoles = () => {
     where: {
       isDeleted: false,
     },
+    include: {
+      permissions: { include: { permission: true } },
+    },
     omit: {
       createdAt: true,
       updatedAt: true,
@@ -20,6 +23,7 @@ export const getAllRoles = () => {
 export const getRoleById = (roleId: number) => {
   return prisma.role.findUnique({
     where: { id: roleId, isDeleted: false },
+    include: { permissions: { include: { permission: true } } },
     omit: {
       createdAt: true,
       updatedAt: true,
@@ -36,6 +40,7 @@ export const createRole = (role: CreateRoleType) => {
       name: role.name,
       description: role?.description || "",
     },
+    include: { permissions: true },
     omit: {
       createdAt: true,
       updatedAt: true,
@@ -64,6 +69,33 @@ export const updateRole = (role: UpdateRoleType) => {
       updatedAt: true,
       deletedAt: true,
       isDeleted: true,
+    },
+  });
+};
+
+/**
+ * Replace role permissions completely
+ */
+export const assignPermissionsToRole = async (
+  roleId: number,
+  permissionIds: number[]
+) => {
+  return prisma.role.update({
+    where: { id: roleId },
+    data: {
+      permissions: {
+        deleteMany: {}, // this removes old relations
+        create: permissionIds.map((permissionId) => ({
+          permission: { connect: { id: permissionId } },
+        })),
+      },
+    },
+    include: {
+      permissions: {
+        include: {
+          permission: true,
+        },
+      },
     },
   });
 };

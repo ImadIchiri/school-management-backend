@@ -99,7 +99,7 @@ export const createRole = async (req: Request, res: Response) => {
 export const updateRole = async (req: Request, res: Response) => {
   try {
     const { roleId: roleIdParams } = req.params;
-    const { roleId: roleIdBody, name, description } = req.body;
+    const { id: roleIdBody, name, description } = req.body;
 
     // Check if Ids are the same
     if (
@@ -133,7 +133,7 @@ export const updateRole = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: `Role Updated Successfully`,
-      date: updatedRole,
+      data: updatedRole,
     });
   } catch (error: any) {
     console.log(`Error While Updating Role ${error}`);
@@ -141,6 +141,50 @@ export const updateRole = async (req: Request, res: Response) => {
       success: false,
       message: `Error While Updating Role`,
       error: error,
+    });
+  }
+};
+
+/*
+    Assign permissions to role
+    Body: { permissionIds: number[] }
+*/
+export const assignPermissionsToRole = async (req: Request, res: Response) => {
+  try {
+    const { roleId } = req.params;
+    const { permissionIds } = req.body;
+
+    if (!roleId || !Array.isArray(permissionIds)) {
+      return res.status(400).json({
+        success: false,
+        message: "roleId and permissionIds[] are required",
+      });
+    }
+
+    const role = await roleService.getRoleById(Number(roleId));
+
+    if (!role) {
+      return res.status(404).json({
+        success: false,
+        message: "Role not found!",
+      });
+    }
+
+    const updatedRole = await roleService.assignPermissionsToRole(
+      Number(roleId),
+      permissionIds
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Permissions updated successfully",
+      data: updatedRole,
+    });
+  } catch (error: any) {
+    console.error("Assign permissions error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to assign permissions",
     });
   }
 };
